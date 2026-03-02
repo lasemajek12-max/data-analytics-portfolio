@@ -82,7 +82,7 @@ A 3-page interactive HR dashboard covering workforce headcount, attrition analys
 I'm actively seeking data analyst, BI developer, and analytics engineer roles in the Netherlands and across Europe.
 
 - 📧 **Email:** lasemajek12@gmail.com
-- 💼 **LinkedIn:** [linkedin.com/in/your-profile](#) ← *update this link*
+- 💼 **LinkedIn:** [linkedin.com/in/tolu-majek124
 - 📍 **Location:** Amsterdam, Netherlands (open to hybrid/remote)
 
 ---
