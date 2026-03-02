@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
 > **Data Analyst | Business Intelligence | Analytics Engineer**  
-> Amsterdam, Netherlands · linkedin.com/in/tolu-majek124 · lasemajek12@gmail.com
+> Amsterdam, Netherlands ·[LinkedIn](https://www.linkedin.com/in/tolu-majek124)· lasemajek12@gmail.com
 
 ---
 
