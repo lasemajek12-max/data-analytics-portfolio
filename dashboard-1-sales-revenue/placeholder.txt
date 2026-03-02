@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard 1 – Sales & Revenue Analytics | Build Guide</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; }
+
+  /* NAV */
+  nav { background: #1F4E79; color: #fff; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  nav h1 { font-size: 18px; font-weight: 700; }
+  nav span { font-size: 12px; opacity: 0.75; }
+  .tabs { display: flex; gap: 6px; background: #163d5e; border-radius: 8px; padding: 6px; }
+  .tab { padding: 7px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; color: #a8c9e8; transition: all 0.2s; border: none; background: transparent; }
+  .tab.active { background: #fff; color: #1F4E79; }
+
+  /* LAYOUT */
+  .page { display: none; padding: 24px 32px; }
+  .page.active { display: block; }
+
+  /* DASHBOARD PAGE */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+  .kpi-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-left: 4px solid #1F4E79; }
+  .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #666; margin-bottom: 6px; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: #1F4E79; }
+  .kpi-sub { font-size: 12px; color: #28a745; margin-top: 4px; }
+  .kpi-sub.neg { color: #dc3545; }
+
+  .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .charts-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .chart-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .chart-title { font-size: 13px; font-weight: 700; color: #1F4E79; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* BAR CHART */
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 140px; padding-bottom: 4px; }
+  .bar-group { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 3px; }
+  .bar { border-radius: 4px 4px 0 0; width: 100%; transition: opacity 0.2s; cursor: pointer; }
+  .bar:hover { opacity: 0.8; }
+  .bar-label { font-size: 9px; color: #888; text-align: center; }
+  .bar-val { font-size: 9px; font-weight: 700; color: #1F4E79; }
+
+  /* DONUT */
+  .donut-wrap { display: flex; align-items: center; gap: 16px; }
+  .donut-legend { flex: 1; }
+  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* LINE CHART */
+  .line-chart { position: relative; height: 130px; }
+  .line-chart svg { width: 100%; height: 100%; }
+
+  /* FUNNEL */
+  .funnel { display: flex; flex-direction: column; gap: 6px; }
+  .funnel-bar { height: 28px; border-radius: 4px; display: flex; align-items: center; padding: 0 12px; font-size: 11px; font-weight: 600; color: #fff; transition: width 0.5s; }
+
+  /* TABLE */
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .mini-table th { background: #1F4E79; color: #fff; padding: 7px 10px; text-align: left; font-size: 11px; }
+  .mini-table td { padding: 6px 10px; border-bottom: 1px solid #f0f0f0; }
+  .mini-table tr:hover td { background: #f0f6ff; }
+  .badge { padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+  .badge.green { background: #d4edda; color: #155724; }
+  .badge.amber { background: #fff3cd; color: #856404; }
+  .badge.red { background: #f8d7da; color: #721c24; }
+
+  .filters { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-pill { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid #1F4E79; color: #1F4E79; background: #fff; transition: all 0.2s; }
+  .filter-pill.active { background: #1F4E79; color: #fff; }
+
+  /* GUIDE PAGE */
+  .guide-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
+  .guide-nav { position: sticky; top: 80px; height: fit-content; }
+  .guide-nav-item { padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-bottom: 4px; border-left: 3px solid transparent; transition: all 0.2s; color: #444; }
+  .guide-nav-item:hover { background: #e8f0fb; color: #1F4E79; }
+  .guide-nav-item.active { background: #dbeafe; color: #1F4E79; border-left-color: #1F4E79; font-weight: 700; }
+
+  .step-card { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
+  .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #1F4E79; color: #fff; font-weight: 700; font-size: 14px; margin-right: 10px; flex-shrink: 0; }
+  .step-header { display: flex; align-items: center; margin-bottom: 16px; }
+  .step-title { font-size: 16px; font-weight: 700; color: #1F4E79; }
+  .step-content p { font-size: 14px; color: #444; line-height: 1.7; margin-bottom: 10px; }
+  .step-content ul { padding-left: 20px; }
+  .step-content li { font-size: 13px; color: #444; line-height: 1.8; }
+  .code-block { background: #1e2a3a; color: #a8d8ea; border-radius: 8px; padding: 14px 18px; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.8; margin: 10px 0; overflow-x: auto; }
+  .code-block .keyword { color: #f6c90e; }
+  .code-block .string { color: #98c379; }
+  .code-block .comment { color: #6a7f94; }
+  .tip-box { background: #e8f5e9; border-left: 4px solid #28a745; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 10px 0; font-size: 13px; color: #155724; }
+  .warn-box { background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 10px 0; font-size: 13px; color: #856404; }
+
+  .visual-spec { background: #f8fbff; border: 1.5px dashed #1F4E79; border-radius: 8px; padding: 16px; margin: 10px 0; }
+  .visual-spec-title { font-weight: 700; color: #1F4E79; font-size: 13px; margin-bottom: 8px; }
+  .spec-row { display: flex; gap: 8px; margin-bottom: 5px; font-size: 12px; }
+  .spec-label { font-weight: 600; min-width: 90px; color: #555; }
+  .spec-val { color: #222; }
+
+  .dax-block { background: #0d1117; color: #e6edf3; border-radius: 8px; padding: 16px 18px; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.9; margin: 10px 0; }
+  .dax-fn { color: #d2a8ff; }
+  .dax-var { color: #79c0ff; }
+  .dax-str { color: #a5d6ff; }
+  .dax-num { color: #f0883e; }
+
+  .page-layout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+  .page-layout-box { background: #dbeafe; border: 2px dashed #1F4E79; border-radius: 8px; padding: 12px; text-align: center; font-size: 11px; font-weight: 700; color: #1F4E79; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+  .page-layout-box.full { grid-column: 1 / -1; }
+  .page-layout-box.half { grid-column: span 1; }
+
+  .portfolio-box { background: linear-gradient(135deg, #1F4E79, #2980b9); color: #fff; border-radius: 12px; padding: 20px 24px; margin-top: 20px; }
+  .portfolio-box h3 { font-size: 15px; margin-bottom: 10px; }
+  .portfolio-box p { font-size: 13px; line-height: 1.7; opacity: 0.9; }
+
+  h2 { font-size: 20px; color: #1F4E79; font-weight: 700; margin-bottom: 20px; }
+  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div>
+    <h1>📊 Dashboard 1 — Sales & Revenue Analytics</h1>
+    <span>TixeeFX Brokerage · 2022–2023 · 1,200 Transactions</span>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('preview')">Live Preview</button>
+    <button class="tab" onclick="switchTab('guide')">Build Guide</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════ PREVIEW TAB -->
+<div id="preview" class="page active">
+  <div class="filters">
+    <span style="font-size:12px;color:#888;align-self:center;">Filter by:</span>
+    <button class="filter-pill active" onclick="setFilter(this)">All Years</button>
+    <button class="filter-pill" onclick="setFilter(this)">2022</button>
+    <button class="filter-pill" onclick="setFilter(this)">2023</button>
+    <button class="filter-pill active" onclick="setFilter(this)">All Regions</button>
+    <button class="filter-pill" onclick="setFilter(this)">EMEA</button>
+    <button class="filter-pill" onclick="setFilter(this)">APAC</button>
+    <button class="filter-pill" onclick="setFilter(this)">Americas</button>
+    <button class="filter-pill" onclick="setFilter(this)">MENA</button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value">$8.47M</div><div class="kpi-sub">↑ 15.3% vs prior period</div></div>
+    <div class="kpi-card" style="border-color:#17a2b8"><div class="kpi-label">Total Profit</div><div class="kpi-value" style="color:#17a2b8">$4.21M</div><div class="kpi-sub">49.7% margin</div></div>
+    <div class="kpi-card" style="border-color:#28a745"><div class="kpi-label">Deals Closed</div><div class="kpi-value" style="color:#28a745">1,148</div><div class="kpi-sub">↑ 8.2% vs prior period</div></div>
+    <div class="kpi-card" style="border-color:#fd7e14"><div class="kpi-label">Avg. Deal Size</div><div class="kpi-value" style="color:#fd7e14">$7,377</div><div class="kpi-sub neg">↓ 1.1% vs prior period</div></div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="charts-row">
+    <!-- Revenue Trend -->
+    <div class="chart-card">
+      <div class="chart-title">Monthly Revenue vs Target</div>
+      <svg viewBox="0 0 500 130" style="width:100%;height:130px">
+        <!-- Grid -->
+        <line x1="40" y1="10" x2="40" y2="110" stroke="#e0e0e0" stroke-width="1"/>
+        <line x1="40" y1="110" x2="490" y2="110" stroke="#e0e0e0" stroke-width="1"/>
+        <line x1="40" y1="70" x2="490" y2="70" stroke="#f0f0f0" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="40" y1="40" x2="490" y2="40" stroke="#f0f0f0" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Target line -->
+        <polyline points="40,65 80,62 120,68 160,60 200,64 240,58 280,56 320,60 360,54 400,58 440,52 480,55" fill="none" stroke="#ccc" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <!-- Revenue area -->
+        <polygon points="40,110 40,72 80,68 120,55 160,62 200,50 240,58 280,44 320,52 360,46 400,55 440,42 480,48 480,110" fill="url(#grad1)" opacity="0.3"/>
+        <polyline points="40,72 80,68 120,55 160,62 200,50 240,58 280,44 320,52 360,46 400,55 440,42 480,48" fill="none" stroke="#1F4E79" stroke-width="2.5"/>
+        <defs><linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1F4E79"/><stop offset="100%" stop-color="#1F4E79" stop-opacity="0"/></linearGradient></defs>
+        <!-- Labels -->
+        <text x="40" y="125" font-size="8" fill="#888" text-anchor="middle">Jan</text>
+        <text x="120" y="125" font-size="8" fill="#888" text-anchor="middle">Mar</text>
+        <text x="200" y="125" font-size="8" fill="#888" text-anchor="middle">May</text>
+        <text x="280" y="125" font-size="8" fill="#888" text-anchor="middle">Jul</text>
+        <text x="360" y="125" font-size="8" fill="#888" text-anchor="middle">Sep</text>
+        <text x="440" y="125" font-size="8" fill="#888" text-anchor="middle">Nov</text>
+        <!-- Legend -->
+        <rect x="350" y="12" width="8" height="8" fill="#1F4E79" rx="2"/>
+        <text x="362" y="20" font-size="8" fill="#555">Revenue</text>
+        <line x1="395" y1="16" x2="403" y2="16" stroke="#ccc" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="406" y="20" font-size="8" fill="#555">Target</text>
+      </svg>
+    </div>
+    <!-- Revenue by Product -->
+    <div class="chart-card">
+      <div class="chart-title">Revenue by Product</div>
+      <div class="donut-wrap">
+        <svg viewBox="0 0 100 100" width="100" height="100">
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#1F4E79" stroke-width="20" stroke-dasharray="65 35" stroke-dashoffset="25"/>
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#2980b9" stroke-width="20" stroke-dasharray="20 80" stroke-dashoffset="-40"/>
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#5dade2" stroke-width="20" stroke-dasharray="15 85" stroke-dashoffset="-60"/>
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#a8d8ea" stroke-width="20" stroke-dasharray="0 100" stroke-dashoffset="-75"/>
+          <circle cx="50" cy="50" r="22" fill="white"/>
+          <text x="50" y="47" text-anchor="middle" font-size="8" font-weight="bold" fill="#1F4E79">TOP</text>
+          <text x="50" y="57" text-anchor="middle" font-size="7" fill="#666">PRODUCT</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#1F4E79"></div>FX Standard 34%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#2980b9"></div>FX Premium 22%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#5dade2"></div>CFD Metals 18%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#a8d8ea"></div>CFD Indices 14%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#d6eef8"></div>Other 12%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="charts-row-3">
+    <!-- Revenue by Region -->
+    <div class="chart-card">
+      <div class="chart-title">Revenue by Region</div>
+      <div class="bar-chart">
+        <div class="bar-group"><div class="bar-val">$2.8M</div><div class="bar" style="height:130px;background:#1F4E79"></div><div class="bar-label">EMEA</div></div>
+        <div class="bar-group"><div class="bar-val">$2.3M</div><div class="bar" style="height:105px;background:#2980b9"></div><div class="bar-label">APAC</div></div>
+        <div class="bar-group"><div class="bar-val">$1.9M</div><div class="bar" style="height:87px;background:#5dade2"></div><div class="bar-label">Americas</div></div>
+        <div class="bar-group"><div class="bar-val">$1.5M</div><div class="bar" style="height:68px;background:#a8d8ea"></div><div class="bar-label">MENA</div></div>
+      </div>
+    </div>
+
+    <!-- Sales Rep Leaderboard -->
+    <div class="chart-card">
+      <div class="chart-title">Top 5 Sales Reps</div>
+      <div style="font-size:12px;">
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f0f0;font-weight:700;color:#888;font-size:10px;"><span>REP</span><span>REVENUE</span><span>ATTAIN</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5"><span>🥇 Sara K.</span><span>$1.24M</span><span style="color:#28a745">118%</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5"><span>🥈 Tolu M.</span><span>$1.18M</span><span style="color:#28a745">112%</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5"><span>🥉 David N.</span><span>$1.09M</span><span style="color:#28a745">104%</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5"><span>4. Mark T.</span><span>$0.98M</span><span style="color:#fd7e14">93%</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0"><span>5. Amara B.</span><span>$0.91M</span><span style="color:#dc3545">87%</span></div>
+      </div>
+    </div>
+
+    <!-- Client Segment -->
+    <div class="chart-card">
+      <div class="chart-title">Revenue by Segment</div>
+      <div class="funnel">
+        <div class="funnel-bar" style="width:100%;background:#1F4E79">VIP — $3.1M (37%)</div>
+        <div class="funnel-bar" style="width:82%;background:#2980b9">Corporate — $2.5M (30%)</div>
+        <div class="funnel-bar" style="width:62%;background:#5dade2">Institutional — $1.7M (20%)</div>
+        <div class="funnel-bar" style="width:42%;background:#a8d8ea;color:#1F4E79">Retail — $1.1M (13%)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Transactions Table -->
+  <div class="chart-card">
+    <div class="chart-title">Recent Transactions (Top 10 by Revenue)</div>
+    <table class="mini-table">
+      <thead><tr><th>Transaction ID</th><th>Sales Rep</th><th>Product</th><th>Region</th><th>Segment</th><th>Revenue</th><th>Profit</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>TXN-0842</td><td>Sara K.</td><td>FX Premium</td><td>EMEA</td><td>VIP</td><td>$17,943</td><td>$9,821</td><td><span class="badge green">Completed</span></td></tr>
+        <tr><td>TXN-0391</td><td>Tolu M.</td><td>FX Options</td><td>APAC</td><td>Corporate</td><td>$17,612</td><td>$8,990</td><td><span class="badge green">Completed</span></td></tr>
+        <tr><td>TXN-1105</td><td>David N.</td><td>CFD Metals</td><td>MENA</td><td>Institutional</td><td>$17,204</td><td>$9,145</td><td><span class="badge green">Completed</span></td></tr>
+        <tr><td>TXN-0274</td><td>Mark T.</td><td>FX Standard</td><td>Americas</td><td>VIP</td><td>$16,988</td><td>$8,201</td><td><span class="badge amber">Pending</span></td></tr>
+        <tr><td>TXN-0660</td><td>Chioma E.</td><td>CFD Indices</td><td>EMEA</td><td>Corporate</td><td>$16,744</td><td>$7,956</td><td><span class="badge green">Completed</span></td></tr>
+        <tr><td>TXN-0993</td><td>Amara B.</td><td>Crypto Pairs</td><td>APAC</td><td>Retail</td><td>$16,312</td><td>$7,488</td><td><span class="badge green">Completed</span></td></tr>
+        <tr><td>TXN-0188</td><td>James O.</td><td>FX Premium</td><td>MENA</td><td>VIP</td><td>$15,991</td><td>$7,234</td><td><span class="badge red">Refunded</span></td></tr>
+        <tr><td>TXN-0521</td><td>Lena V.</td><td>FX Standard</td><td>EMEA</td><td>Institutional</td><td>$15,876</td><td>$7,112</td><td><span class="badge green">Completed</span></td></tr>
+        <tr><td>TXN-0744</td><td>Sara K.</td><td>CFD Metals</td><td>Americas</td><td>Corporate</td><td>$15,503</td><td>$6,998</td><td><span class="badge green">Completed</span></td></tr>
+        <tr><td>TXN-0307</td><td>David N.</td><td>FX Options</td><td>APAC</td><td>VIP</td><td>$15,290</td><td>$6,845</td><td><span class="badge green">Completed</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ GUIDE TAB -->
+<div id="guide" class="page">
+  <h2>📋 Step-by-Step Power BI Build Guide</h2>
+  <p style="color:#666;margin-bottom:24px;font-size:14px;">Follow these steps exactly to recreate this dashboard. Estimated build time: <strong>2–3 hours</strong> for a beginner.</p>
+
+  <div class="guide-grid">
+    <div class="guide-nav" id="guideNav">
+      <div class="guide-nav-item active" onclick="scrollToStep('s1')">① Load the Data</div>
+      <div class="guide-nav-item" onclick="scrollToStep('s2')">② Build the Data Model</div>
+      <div class="guide-nav-item" onclick="scrollToStep('s3')">③ Create DAX Measures</div>
+      <div class="guide-nav-item" onclick="scrollToStep('s4')">④ Design Page Layout</div>
+      <div class="guide-nav-item" onclick="scrollToStep('s5')">⑤ Build Each Visual</div>
+      <div class="guide-nav-item" onclick="scrollToStep('s6')">⑥ Add Slicers & Filters</div>
+      <div class="guide-nav-item" onclick="scrollToStep('s7')">⑦ Format & Polish</div>
+      <div class="guide-nav-item" onclick="scrollToStep('s8')">⑧ Portfolio Description</div>
+    </div>
+
+    <div>
+      <!-- STEP 1 -->
+      <div class="step-card" id="s1">
+        <div class="step-header"><div class="step-badge">1</div><div class="step-title">Load the Data into Power BI</div></div>
+        <div class="step-content">
+          <p>This dashboard uses the Excel file: <strong>Dashboard1_Sales_Revenue_Data.xlsx</strong></p>
+          <ul>
+            <li>Open Power BI Desktop → click <strong>Get Data → Excel Workbook</strong></li>
+            <li>Navigate to your downloaded Excel file and click <strong>Open</strong></li>
+            <li>In the Navigator panel, check all 4 sheets: <strong>Sales_Transactions, Monthly_Targets, Client_Retention, Sales_Rep_KPIs</strong></li>
+            <li>Click <strong>Transform Data</strong> to open Power Query Editor</li>
+            <li>For each sheet, verify the first row is being used as headers. If not: <strong>Home → Use First Row as Headers</strong></li>
+            <li>Set column data types: Date columns → <em>Date</em>, Revenue/Cost → <em>Decimal Number</em>, IDs → <em>Text</em></li>
+            <li>Click <strong>Close & Apply</strong></li>
+          </ul>
+          <div class="tip-box">✅ Tip: If the Date column shows as text, click the column header icon and change type to <strong>Date</strong></div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-card" id="s2">
+        <div class="step-header"><div class="step-badge">2</div><div class="step-title">Build the Data Model (Relationships)</div></div>
+        <div class="step-content">
+          <p>Click the <strong>Model view</strong> icon (3rd icon on left sidebar). Create these relationships:</p>
+          <ul>
+            <li><strong>Sales_Transactions[Sales_Rep]</strong> → <strong>Sales_Rep_KPIs[Sales_Rep]</strong> (Many-to-Many)</li>
+            <li><strong>Sales_Transactions[Month]</strong> → <strong>Monthly_Targets[Month]</strong> (Many-to-One)</li>
+            <li><strong>Sales_Transactions[Client_ID]</strong> → <strong>Client_Retention[Client_ID]</strong> (Many-to-One)</li>
+          </ul>
+          <div class="tip-box">✅ To create a relationship: drag a field from one table and drop it onto the matching field in another table</div>
+          <div class="warn-box">⚠️ Keep all relationships as <strong>Single</strong> direction (not Both) to avoid circular dependency errors</div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-card" id="s3">
+        <div class="step-header"><div class="step-badge">3</div><div class="step-title">Create DAX Measures</div></div>
+        <div class="step-content">
+          <p>In the <strong>Report view</strong>, right-click <strong>Sales_Transactions</strong> table → <strong>New Measure</strong>. Create each measure below:</p>
+
+          <div class="visual-spec-title" style="margin-top:12px">📐 Total Revenue</div>
+          <div class="dax-block">
+<span class="dax-var">Total Revenue</span> = <span class="dax-fn">SUM</span>(Sales_Transactions[Revenue_USD])
+          </div>
+
+          <div class="visual-spec-title">📐 Total Profit</div>
+          <div class="dax-block">
+<span class="dax-var">Total Profit</span> = <span class="dax-fn">SUM</span>(Sales_Transactions[Profit_USD])
+          </div>
+
+          <div class="visual-spec-title">📐 Profit Margin %</div>
+          <div class="dax-block">
+<span class="dax-var">Profit Margin %</span> = <span class="dax-fn">DIVIDE</span>([Total Profit], [Total Revenue], <span class="dax-num">0</span>)
+          </div>
+
+          <div class="visual-spec-title">📐 Total Deals</div>
+          <div class="dax-block">
+<span class="dax-var">Total Deals</span> = <span class="dax-fn">COUNTROWS</span>(Sales_Transactions)
+          </div>
+
+          <div class="visual-spec-title">📐 Avg Deal Size</div>
+          <div class="dax-block">
+<span class="dax-var">Avg Deal Size</span> = <span class="dax-fn">DIVIDE</span>([Total Revenue], [Total Deals], <span class="dax-num">0</span>)
+          </div>
+
+          <div class="visual-spec-title">📐 Revenue vs Target Variance</div>
+          <div class="dax-block">
+<span class="dax-var">Revenue vs Target</span> =
+  <span class="dax-fn">SUMX</span>(
+    Monthly_Targets,
+    Monthly_Targets[Actual_USD] - Monthly_Targets[Target_USD]
+  )
+          </div>
+
+          <div class="visual-spec-title">📐 Target Attainment %</div>
+          <div class="dax-block">
+<span class="dax-var">Target Attainment %</span> =
+  <span class="dax-fn">DIVIDE</span>(
+    <span class="dax-fn">SUM</span>(Monthly_Targets[Actual_USD]),
+    <span class="dax-fn">SUM</span>(Monthly_Targets[Target_USD]),
+    <span class="dax-num">0</span>
+  )
+          </div>
+
+          <div class="tip-box">✅ Format currency measures: select measure → Measure tools tab → Format as <strong>Currency $</strong>, 0 decimal places</div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step-card" id="s4">
+        <div class="step-header"><div class="step-badge">4</div><div class="step-title">Design the Page Layout (3-Page Report)</div></div>
+        <div class="step-content">
+          <p>This report has <strong>3 pages</strong>. Right-click the page tab at the bottom to rename them:</p>
+          <ul>
+            <li><strong>Page 1:</strong> Executive Overview</li>
+            <li><strong>Page 2:</strong> Sales Rep Performance</li>
+            <li><strong>Page 3:</strong> Client & Product Deep Dive</li>
+          </ul>
+          <p style="margin-top:10px">Set canvas size: <strong>View → Page view → Actual Size</strong>. Then: <strong>View → Page background</strong> → set color to <code>#F0F4F8</code></p>
+          <p>Add a header rectangle: Insert → Shapes → Rectangle → fill <code>#1F4E79</code>, full width, 60px height. Add a Text Box on top with the dashboard title in white.</p>
+
+          <div class="visual-spec-title" style="margin-top:14px">Page 1 Layout Blueprint:</div>
+          <div class="page-layout-grid">
+            <div class="page-layout-box full">🔵 Header Bar: Title + Company Name</div>
+            <div class="page-layout-box">KPI: Total Revenue</div>
+            <div class="page-layout-box">KPI: Total Profit</div>
+            <div class="page-layout-box">KPI: Deals Closed</div>
+            <div class="page-layout-box" style="grid-column:span 2">📈 Line Chart: Monthly Revenue vs Target</div>
+            <div class="page-layout-box">🍩 Donut: Product Revenue</div>
+            <div class="page-layout-box">📊 Bar: Revenue by Region</div>
+            <div class="page-layout-box">📊 Bar: Revenue by Segment</div>
+            <div class="page-layout-box">🏆 Table: Top Sales Reps</div>
+            <div class="page-layout-box full">📋 Transaction Table (bottom)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step-card" id="s5">
+        <div class="step-header"><div class="step-badge">5</div><div class="step-title">Build Each Visual — Exact Settings</div></div>
+        <div class="step-content">
+
+          <div class="visual-spec">
+            <div class="visual-spec-title">📦 KPI Cards (×4)</div>
+            <div class="spec-row"><span class="spec-label">Visual Type:</span><span class="spec-val">Card</span></div>
+            <div class="spec-row"><span class="spec-label">Fields:</span><span class="spec-val">Total Revenue / Total Profit / Total Deals / Avg Deal Size</span></div>
+            <div class="spec-row"><span class="spec-label">Format:</span><span class="spec-val">Data label → Bold 28pt, white or dark blue. No category label. Background #fff, border radius 8px</span></div>
+          </div>
+
+          <div class="visual-spec">
+            <div class="visual-spec-title">📈 Line Chart: Monthly Revenue vs Target</div>
+            <div class="spec-row"><span class="spec-label">Visual Type:</span><span class="spec-val">Line Chart</span></div>
+            <div class="spec-row"><span class="spec-label">X-Axis:</span><span class="spec-val">Sales_Transactions[Month] (sorted by date)</span></div>
+            <div class="spec-row"><span class="spec-label">Y-Axis:</span><span class="spec-val">Total Revenue (primary), SUM(Monthly_Targets[Target_USD]) (secondary)</span></div>
+            <div class="spec-row"><span class="spec-label">Colors:</span><span class="spec-val">Revenue = #1F4E79, Target = #ccc dashed</span></div>
+          </div>
+
+          <div class="visual-spec">
+            <div class="visual-spec-title">🍩 Donut Chart: Product Revenue Split</div>
+            <div class="spec-row"><span class="spec-label">Visual Type:</span><span class="spec-val">Donut Chart</span></div>
+            <div class="spec-row"><span class="spec-label">Legend:</span><span class="spec-val">Sales_Transactions[Product]</span></div>
+            <div class="spec-row"><span class="spec-label">Values:</span><span class="spec-val">Total Revenue</span></div>
+            <div class="spec-row"><span class="spec-label">Detail labels:</span><span class="spec-val">Show % of total</span></div>
+          </div>
+
+          <div class="visual-spec">
+            <div class="visual-spec-title">📊 Clustered Bar: Revenue by Region</div>
+            <div class="spec-row"><span class="spec-label">Visual Type:</span><span class="spec-val">Clustered Bar Chart</span></div>
+            <div class="spec-row"><span class="spec-label">Y-Axis:</span><span class="spec-val">Sales_Transactions[Region]</span></div>
+            <div class="spec-row"><span class="spec-label">X-Axis:</span><span class="spec-val">Total Revenue</span></div>
+            <div class="spec-row"><span class="spec-label">Sort:</span><span class="spec-val">Descending by Total Revenue</span></div>
+          </div>
+
+          <div class="visual-spec">
+            <div class="visual-spec-title">📋 Table: Sales Rep Performance</div>
+            <div class="spec-row"><span class="spec-label">Visual Type:</span><span class="spec-val">Table</span></div>
+            <div class="spec-row"><span class="spec-label">Columns:</span><span class="spec-val">Sales_Rep, Total Revenue, Total Deals, Avg Deal Size, Target Attainment %</span></div>
+            <div class="spec-row"><span class="spec-label">Conditional Format:</span><span class="spec-val">Target Attainment % → Background color (green >100%, amber 80-100%, red &lt;80%)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="step-card" id="s6">
+        <div class="step-header"><div class="step-badge">6</div><div class="step-title">Add Slicers (Filters)</div></div>
+        <div class="step-content">
+          <p>Slicers let viewers filter the whole report. Add these on Page 1:</p>
+          <ul>
+            <li>Insert <strong>Slicer</strong> → field: <strong>Year</strong> → Style: Dropdown or Tile</li>
+            <li>Insert <strong>Slicer</strong> → field: <strong>Quarter</strong> → Style: Tile</li>
+            <li>Insert <strong>Slicer</strong> → field: <strong>Region</strong> → Style: Dropdown</li>
+            <li>Insert <strong>Slicer</strong> → field: <strong>Client_Segment</strong> → Style: Dropdown</li>
+          </ul>
+          <p style="margin-top:8px">To sync slicers across pages: <strong>View → Sync Slicers</strong> → select all pages for each slicer</p>
+          <div class="tip-box">✅ Style slicers: Format → Visual → Slicer header → background <code>#1F4E79</code>, text white. Makes it look professional.</div>
+        </div>
+      </div>
+
+      <!-- STEP 7 -->
+      <div class="step-card" id="s7">
+        <div class="step-header"><div class="step-badge">7</div><div class="step-title">Format & Polish the Dashboard</div></div>
+        <div class="step-content">
+          <p>These small steps make the difference between a beginner and a professional dashboard:</p>
+          <ul>
+            <li><strong>Consistent font:</strong> Set all visuals to <em>Segoe UI</em> or <em>Arial</em></li>
+            <li><strong>Color palette:</strong> Use only these 4 colors: <code>#1F4E79</code> · <code>#2980b9</code> · <code>#28a745</code> · <code>#dc3545</code></li>
+            <li><strong>Remove borders:</strong> Every visual → Format → Visual border → OFF</li>
+            <li><strong>Add shadows:</strong> Format → Shadow → ON (subtle, 2px offset)</li>
+            <li><strong>Grid lines:</strong> Turn OFF x-axis and y-axis gridlines on bar charts</li>
+            <li><strong>Titles:</strong> Every visual needs a clear title in <strong>bold 11pt</strong> dark blue</li>
+            <li><strong>Blank space:</strong> Leave 12px gap between every visual</li>
+            <li><strong>Logo:</strong> Insert → Image → add a simple placeholder company logo top-left</li>
+          </ul>
+          <div class="tip-box">✅ Use <strong>Format Painter</strong> (paint roller icon) to copy formatting from one visual to another instantly</div>
+        </div>
+      </div>
+
+      <!-- STEP 8 -->
+      <div class="step-card" id="s8">
+        <div class="step-header"><div class="step-badge">8</div><div class="step-title">Portfolio Description (Copy to CV & LinkedIn)</div></div>
+        <div class="step-content">
+          <div class="portfolio-box">
+            <h3>📝 CV Bullet (paste into your Work Experience)</h3>
+            <p>Built an end-to-end Sales & Revenue Analytics dashboard in Power BI analyzing 1,200+ transactions across 4 regions, incorporating DAX measures for KPI tracking (revenue, profit margin, target attainment), slicer-driven interactivity, and conditional formatting — enabling real-time visibility into sales rep performance and client segment profitability.</p>
+          </div>
+          <div class="portfolio-box" style="margin-top:12px;background:linear-gradient(135deg,#155724,#28a745)">
+            <h3>📝 LinkedIn Project Description</h3>
+            <p>🔷 Project: Sales & Revenue Analytics Dashboard | Power BI<br><br>Designed a 3-page interactive Power BI report for a fictional forex brokerage, covering executive KPI overview, rep performance leaderboard, and client/product deep dive. Stack: Power BI · DAX · Power Query · Excel data modeling. Key features: dynamic slicers, conditional formatting, revenue vs. target trend analysis across 1,200 transactions and $8.4M simulated revenue.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+  }
+  function setFilter(el) {
+    el.classList.toggle('active');
+  }
+  function scrollToStep(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.guide-nav-item').forEach(i => i.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+</script>
+</body><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales & Revenue Analytics Dashboard | Toluwalase Majekodunmi</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; }
+
+  header {
+    background: linear-gradient(135deg, #1F4E79, #2980b9);
+    color: #fff;
+    padding: 20px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+  }
+  header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
+  header p { font-size: 12px; opacity: 0.75; margin-top: 3px; }
+  .header-meta { text-align: right; font-size: 12px; opacity: 0.8; line-height: 1.7; }
+  .header-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; display: inline-block; margin-top: 6px; }
+
+  .toolbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 10px 36px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+  .toolbar-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-right: 4px; }
+  .filter-pill { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid #1F4E79; color: #1F4E79; background: #fff; transition: all 0.2s; }
+  .filter-pill.active { background: #1F4E79; color: #fff; }
+  .filter-pill:hover { background: #1F4E79; color: #fff; }
+  .divider { width: 1px; height: 20px; background: #ddd; margin: 0 4px; }
+
+  .main { padding: 24px 36px; }
+
+  /* KPIs */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
+  .kpi-card {
+    background: #fff; border-radius: 12px; padding: 20px 22px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-left: 4px solid #1F4E79;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #888; font-weight: 600; }
+  .kpi-value { font-size: 30px; font-weight: 700; color: #1F4E79; line-height: 1.1; }
+  .kpi-trend { font-size: 12px; color: #28a745; font-weight: 600; }
+  .kpi-trend.neg { color: #dc3545; }
+  .kpi-sub { font-size: 11px; color: #aaa; }
+
+  /* Charts grid */
+  .row-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .row-full { margin-bottom: 16px; }
+
+  .card { background: #fff; border-radius: 12px; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+  .card-title { font-size: 11px; font-weight: 700; color: #1F4E79; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .card-title span { color: #aaa; font-weight: 400; font-size: 10px; text-transform: none; letter-spacing: 0; }
+
+  /* SVG charts */
+  svg text { font-family: 'Segoe UI', Arial, sans-serif; }
+
+  /* Donut */
+  .donut-wrap { display: flex; align-items: center; gap: 20px; }
+  .legend { flex: 1; }
+  .legend-item { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; font-size: 12px; color: #444; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-pct { margin-left: auto; font-weight: 700; color: #1F4E79; }
+
+  /* Horizontal bars */
+  .hbar-list { display: flex; flex-direction: column; gap: 9px; }
+  .hbar-row { display: flex; align-items: center; gap: 10px; }
+  .hbar-label { font-size: 11px; color: #555; min-width: 75px; text-align: right; }
+  .hbar-track { flex: 1; background: #f0f2f5; border-radius: 6px; height: 22px; overflow: hidden; }
+  .hbar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 10px; font-weight: 700; color: #fff; transition: width 0.8s ease; }
+  .hbar-val { font-size: 11px; color: #555; min-width: 48px; font-weight: 600; }
+
+  /* Funnel */
+  .funnel { display: flex; flex-direction: column; gap: 7px; }
+  .funnel-bar { height: 32px; border-radius: 6px; display: flex; align-items: center; padding: 0 14px; font-size: 11px; font-weight: 700; color: #fff; justify-content: space-between; }
+
+  /* Table */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .data-table thead th { background: #1F4E79; color: #fff; padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
+  .data-table thead th:first-child { border-radius: 6px 0 0 0; }
+  .data-table thead th:last-child { border-radius: 0 6px 0 0; }
+  .data-table tbody td { padding: 9px 12px; border-bottom: 1px solid #f2f2f2; color: #333; }
+  .data-table tbody tr:hover td { background: #f0f6ff; }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .badge { padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+  .badge.g { background: #d4edda; color: #155724; }
+  .badge.a { background: #fff3cd; color: #856404; }
+  .badge.r { background: #f8d7da; color: #721c24; }
+
+  /* Rep leaderboard */
+  .rep-list { display: flex; flex-direction: column; gap: 2px; }
+  .rep-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 12px; }
+  .rep-row:last-child { border-bottom: none; }
+  .rep-name { font-weight: 600; color: #333; }
+  .rep-rev { color: #1F4E79; font-weight: 700; }
+  .rep-att { font-weight: 700; font-size: 11px; }
+
+  /* Footer */
+  footer { background: #1F4E79; color: rgba(255,255,255,0.7); text-align: center; padding: 14px; font-size: 11px; margin-top: 8px; }
+  footer a { color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .row-2-1, .row-3 { grid-template-columns: 1fr; }
+    header { flex-direction: column; gap: 10px; text-align: center; }
+    .header-meta { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>📊 Sales & Revenue Analytics Dashboard</h1>
+    <p>TixeeFX Brokerage · Jan 2022 – Dec 2023 · 1,200 Transactions · 4 Regions · 8 Sales Reps</p>
+  </div>
+  <div class="header-meta">
+    <div>Built by <strong>Toluwalase Majekodunmi</strong></div>
+    <div>Power BI · DAX · SQL · Excel · Power Query</div>
+    <div class="header-badge">📁 Portfolio Project</div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <span class="toolbar-label">Year</span>
+  <button class="filter-pill active">All</button>
+  <button class="filter-pill">2022</button>
+  <button class="filter-pill">2023</button>
+  <div class="divider"></div>
+  <span class="toolbar-label">Region</span>
+  <button class="filter-pill active">All Regions</button>
+  <button class="filter-pill">EMEA</button>
+  <button class="filter-pill">APAC</button>
+  <button class="filter-pill">Americas</button>
+  <button class="filter-pill">MENA</button>
+  <div class="divider"></div>
+  <span class="toolbar-label">Segment</span>
+  <button class="filter-pill active">All Segments</button>
+  <button class="filter-pill">VIP</button>
+  <button class="filter-pill">Corporate</button>
+  <button class="filter-pill">Retail</button>
+</div>
+
+<div class="main">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Revenue</div>
+      <div class="kpi-value">$8.47M</div>
+      <div class="kpi-trend">↑ 15.3% vs prior period</div>
+      <div class="kpi-sub">Target: $7.8M</div>
+    </div>
+    <div class="kpi-card" style="border-color:#17a2b8">
+      <div class="kpi-label">Total Profit</div>
+      <div class="kpi-value" style="color:#17a2b8">$4.21M</div>
+      <div class="kpi-trend">49.7% margin</div>
+      <div class="kpi-sub">+2.1pp vs prior period</div>
+    </div>
+    <div class="kpi-card" style="border-color:#28a745">
+      <div class="kpi-label">Deals Closed</div>
+      <div class="kpi-value" style="color:#28a745">1,148</div>
+      <div class="kpi-trend">↑ 8.2% vs prior period</div>
+      <div class="kpi-sub">52 pending review</div>
+    </div>
+    <div class="kpi-card" style="border-color:#fd7e14">
+      <div class="kpi-label">Avg Deal Size</div>
+      <div class="kpi-value" style="color:#fd7e14">$7,377</div>
+      <div class="kpi-trend neg">↓ 1.1% vs prior period</div>
+      <div class="kpi-sub">Target: $7,500</div>
+    </div>
+  </div>
+
+  <!-- Row 2: Line + Donut -->
+  <div class="row-2-1">
+    <div class="card">
+      <div class="card-title">Monthly Revenue vs Target <span>Jan 2022 – Dec 2023</span></div>
+      <svg viewBox="0 0 540 150" style="width:100%;height:150px">
+        <defs>
+          <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1F4E79" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#1F4E79" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- Grid lines -->
+        <line x1="44" y1="15" x2="44" y2="118" stroke="#e8e8e8" stroke-width="1"/>
+        <line x1="44" y1="118" x2="530" y2="118" stroke="#e8e8e8" stroke-width="1"/>
+        <line x1="44" y1="78" x2="530" y2="78" stroke="#f0f0f0" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="44" y1="48" x2="530" y2="48" stroke="#f0f0f0" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- Y axis labels -->
+        <text x="38" y="82" font-size="8" fill="#aaa" text-anchor="end">$400K</text>
+        <text x="38" y="52" font-size="8" fill="#aaa" text-anchor="end">$600K</text>
+        <text x="38" y="22" font-size="8" fill="#aaa" text-anchor="end">$800K</text>
+        <!-- Target line -->
+        <polyline points="44,74 83,72 122,76 161,70 200,73 239,68 278,66 317,69 356,64 395,67 434,62 473,64 512,60 530,58"
+          fill="none" stroke="#cbd5e0" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <!-- Revenue area -->
+        <polygon points="44,118 44,80 83,76 122,62 161,70 200,57 239,65 278,50 317,58 356,52 395,62 434,47 473,54 512,44 530,118"
+          fill="url(#revGrad)"/>
+        <!-- Revenue line -->
+        <polyline points="44,80 83,76 122,62 161,70 200,57 239,65 278,50 317,58 356,52 395,62 434,47 473,54 512,44"
+          fill="none" stroke="#1F4E79" stroke-width="2.5" stroke-linejoin="round"/>
+        <!-- Data points -->
+        <circle cx="44" cy="80" r="3" fill="#1F4E79"/><circle cx="122" cy="62" r="3" fill="#1F4E79"/>
+        <circle cx="200" cy="57" r="3" fill="#1F4E79"/><circle cx="278" cy="50" r="3" fill="#1F4E79"/>
+        <circle cx="356" cy="52" r="3" fill="#1F4E79"/><circle cx="434" cy="47" r="3" fill="#1F4E79"/>
+        <circle cx="512" cy="44" r="3" fill="#1F4E79"/>
+        <!-- X labels -->
+        <text x="44" y="132" font-size="8" fill="#aaa" text-anchor="middle">Jan'22</text>
+        <text x="122" y="132" font-size="8" fill="#aaa" text-anchor="middle">Mar</text>
+        <text x="200" y="132" font-size="8" fill="#aaa" text-anchor="middle">May</text>
+        <text x="278" y="132" font-size="8" fill="#aaa" text-anchor="middle">Jul</text>
+        <text x="356" y="132" font-size="8" fill="#aaa" text-anchor="middle">Sep</text>
+        <text x="434" y="132" font-size="8" fill="#aaa" text-anchor="middle">Nov</text>
+        <text x="512" y="132" font-size="8" fill="#aaa" text-anchor="middle">Dec'23</text>
+        <!-- Legend -->
+        <rect x="370" y="16" width="9" height="9" fill="#1F4E79" rx="2"/>
+        <text x="382" y="24" font-size="8" fill="#555">Revenue</text>
+        <line x1="418" y1="20" x2="428" y2="20" stroke="#cbd5e0" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="432" y="24" font-size="8" fill="#555">Target</text>
+      </svg>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Revenue by Product</div>
+      <div class="donut-wrap">
+        <svg viewBox="0 0 110 110" width="110" height="110" style="flex-shrink:0">
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#1F4E79" stroke-width="22" stroke-dasharray="85 215" stroke-dashoffset="25" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#2980b9" stroke-width="22" stroke-dasharray="55 245" stroke-dashoffset="-60" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#5dade2" stroke-width="22" stroke-dasharray="45 255" stroke-dashoffset="-115" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#a8d8ea" stroke-width="22" stroke-dasharray="36 264" stroke-dashoffset="-160" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#d6eef8" stroke-width="22" stroke-dasharray="30 270" stroke-dashoffset="-196" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="25" fill="white"/>
+          <text x="55" y="51" text-anchor="middle" font-size="9" font-weight="bold" fill="#1F4E79">$8.47M</text>
+          <text x="55" y="62" text-anchor="middle" font-size="7.5" fill="#888">Revenue</text>
+        </svg>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#1F4E79"></div>FX Standard<span class="legend-pct">34%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#2980b9"></div>FX Premium<span class="legend-pct">22%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#5dade2"></div>CFD Metals<span class="legend-pct">18%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#a8d8ea"></div>CFD Indices<span class="legend-pct">14%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#d6eef8"></div>Other<span class="legend-pct">12%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="row-3">
+    <div class="card">
+      <div class="card-title">Revenue by Region</div>
+      <div class="hbar-list">
+        <div class="hbar-row"><div class="hbar-label">EMEA</div><div class="hbar-track"><div class="hbar-fill" style="width:100%;background:#1F4E79">$2.8M</div></div><div class="hbar-val">$2.8M</div></div>
+        <div class="hbar-row"><div class="hbar-label">APAC</div><div class="hbar-track"><div class="hbar-fill" style="width:82%;background:#2980b9">$2.3M</div></div><div class="hbar-val">$2.3M</div></div>
+        <div class="hbar-row"><div class="hbar-label">Americas</div><div class="hbar-track"><div class="hbar-fill" style="width:68%;background:#5dade2">$1.9M</div></div><div class="hbar-val">$1.9M</div></div>
+        <div class="hbar-row"><div class="hbar-label">MENA</div><div class="hbar-track"><div class="hbar-fill" style="width:54%;background:#a8d8ea;color:#1F4E79">$1.5M</div></div><div class="hbar-val">$1.5M</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Top Sales Reps <span>by Revenue</span></div>
+      <div class="rep-list">
+        <div class="rep-row"><span>🥇 <span class="rep-name">Sara K.</span></span><span class="rep-rev">$1.24M</span><span class="rep-att" style="color:#28a745">118%</span></div>
+        <div class="rep-row"><span>🥈 <span class="rep-name">Tolu M.</span></span><span class="rep-rev">$1.18M</span><span class="rep-att" style="color:#28a745">112%</span></div>
+        <div class="rep-row"><span>🥉 <span class="rep-name">David N.</span></span><span class="rep-rev">$1.09M</span><span class="rep-att" style="color:#28a745">104%</span></div>
+        <div class="rep-row"><span>4. <span class="rep-name">Mark T.</span></span><span class="rep-rev">$0.98M</span><span class="rep-att" style="color:#fd7e14">93%</span></div>
+        <div class="rep-row"><span>5. <span class="rep-name">Amara B.</span></span><span class="rep-rev">$0.91M</span><span class="rep-att" style="color:#dc3545">87%</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Revenue by Client Segment</div>
+      <div class="funnel">
+        <div class="funnel-bar" style="background:#1F4E79">VIP <span>$3.1M · 37%</span></div>
+        <div class="funnel-bar" style="background:#2980b9;margin:0 18px">Corporate <span>$2.5M · 30%</span></div>
+        <div class="funnel-bar" style="background:#5dade2;margin:0 36px">Institutional <span>$1.7M · 20%</span></div>
+        <div class="funnel-bar" style="background:#a8d8ea;color:#1F4E79;margin:0 54px">Retail <span>$1.1M · 13%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Transactions Table -->
+  <div class="row-full">
+    <div class="card">
+      <div class="card-title">Top Transactions by Revenue <span>Showing top 10 of 1,200</span></div>
+      <table class="data-table">
+        <thead>
+          <tr><th>Transaction ID</th><th>Date</th><th>Sales Rep</th><th>Product</th><th>Region</th><th>Segment</th><th>Revenue</th><th>Profit</th><th>Margin</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>TXN-0842</td><td>14 Aug 2023</td><td>Sara K.</td><td>FX Premium</td><td>EMEA</td><td>VIP</td><td>$17,943</td><td>$9,821</td><td>54.7%</td><td><span class="badge g">Completed</span></td></tr>
+          <tr><td>TXN-0391</td><td>02 Mar 2023</td><td>Tolu M.</td><td>FX Options</td><td>APAC</td><td>Corporate</td><td>$17,612</td><td>$8,990</td><td>51.0%</td><td><span class="badge g">Completed</span></td></tr>
+          <tr><td>TXN-1105</td><td>21 Oct 2023</td><td>David N.</td><td>CFD Metals</td><td>MENA</td><td>Institutional</td><td>$17,204</td><td>$9,145</td><td>53.2%</td><td><span class="badge g">Completed</span></td></tr>
+          <tr><td>TXN-0274</td><td>18 Jan 2023</td><td>Mark T.</td><td>FX Standard</td><td>Americas</td><td>VIP</td><td>$16,988</td><td>$8,201</td><td>48.3%</td><td><span class="badge a">Pending</span></td></tr>
+          <tr><td>TXN-0660</td><td>05 Jun 2023</td><td>Chioma E.</td><td>CFD Indices</td><td>EMEA</td><td>Corporate</td><td>$16,744</td><td>$7,956</td><td>47.5%</td><td><span class="badge g">Completed</span></td></tr>
+          <tr><td>TXN-0993</td><td>29 Sep 2023</td><td>Amara B.</td><td>Crypto Pairs</td><td>APAC</td><td>Retail</td><td>$16,312</td><td>$7,488</td><td>45.9%</td><td><span class="badge g">Completed</span></td></tr>
+          <tr><td>TXN-0188</td><td>07 Feb 2022</td><td>James O.</td><td>FX Premium</td><td>MENA</td><td>VIP</td><td>$15,991</td><td>$7,234</td><td>45.2%</td><td><span class="badge r">Refunded</span></td></tr>
+          <tr><td>TXN-0521</td><td>11 May 2023</td><td>Lena V.</td><td>FX Standard</td><td>EMEA</td><td>Institutional</td><td>$15,876</td><td>$7,112</td><td>44.8%</td><td><span class="badge g">Completed</span></td></tr>
+          <tr><td>TXN-0744</td><td>22 Jul 2023</td><td>Sara K.</td><td>CFD Metals</td><td>Americas</td><td>Corporate</td><td>$15,503</td><td>$6,998</td><td>45.1%</td><td><span class="badge g">Completed</span></td></tr>
+          <tr><td>TXN-0307</td><td>03 Apr 2022</td><td>David N.</td><td>FX Options</td><td>APAC</td><td>VIP</td><td>$15,290</td><td>$6,845</td><td>44.8%</td><td><span class="badge g">Completed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Built by <a href="#">Toluwalase Majekodunmi</a> &nbsp;·&nbsp; Tools: Power BI · DAX · SQL · Excel · Power Query &nbsp;·&nbsp; Dataset: 1,200 simulated transactions · $8.47M revenue · 2022–2023
+</footer>
+
+<script>
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const group = this.closest('.toolbar');
+      // Only deactivate pills in the same logical group (separated by dividers)
+      this.classList.toggle('active');
+    });
+  });
+</script>
+</body>
+</html>
+
+</html>
