@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
 > **Data Analyst | Business Intelligence | Analytics Engineer**  
-> Amsterdam, Netherlands ·[LinkedIn](https://www.linkedin.com/in/tolu-majek124)· lasemajek12@gmail.com
+> Amsterdam, Netherlands · [LinkedIn](https://www.linkedin.com/in/tolu-majek124/) · lasemajek12@gmail.com
 
 ---
 
@@ -37,9 +37,9 @@ An end-to-end sales performance dashboard built for a fictional forex brokerage,
 
 | | |
 |---|---|
-| 🔗 **Live Preview** | [View Dashboard →](./dashboard-1-sales-revenue/Dashboard1_Sales_Preview.html) |
-| 📋 **Build Guide** | [Step-by-step Power BI instructions →](./dashboard-1-sales-revenue/Dashboard1_Sales_BuildGuide.html) |
-| 📂 **Dataset** | [Download Excel data →](./dashboard-1-sales-revenue/Dashboard1_Sales_Revenue_Data.xlsx) |
+| 🔗 **Live Preview** | [View Dashboard →](https://lasemajek12-max.github.io/data-analytics-portfolio/dashboard-1-sales-revenue/Dashboard1_Sales_Preview.html) |
+| 📋 **Build Guide** | [Step-by-step Power BI instructions →](https://lasemajek12-max.github.io/data-analytics-portfolio/dashboard-1-sales-revenue/Dashboard1_Sales_BuildGuide.html) |
+| 📂 **Dataset** | [Download Excel data →](https://github.com/lasemajek12-max/data-analytics-portfolio/raw/main/dashboard-1-sales-revenue/Dashboard1_Sales_Revenue_Data.xlsx) |
 
 ---
 
@@ -58,9 +58,9 @@ A 3-page interactive HR dashboard covering workforce headcount, attrition analys
 
 | | |
 |---|---|
-| 🔗 **Live Preview** | [View Dashboard →](./dashboard-2-hr-workforce/Dashboard2_HR_Preview.html) |
-| 📋 **Build Guide** | [Step-by-step Power BI instructions →](./dashboard-2-hr-workforce/Dashboard2_HR_BuildGuide.html) |
-| 📂 **Dataset** | [Download Excel data →](./dashboard-2-hr-workforce/Dashboard2_HR_Workforce_Data.xlsx) |
+| 🔗 **Live Preview** | [View Dashboard →](https://lasemajek12-max.github.io/data-analytics-portfolio/dashboard-2-hr-workforce/Dashboard2_HR_Preview.html) |
+| 📋 **Build Guide** | [Step-by-step Power BI instructions →](https://lasemajek12-max.github.io/data-analytics-portfolio/dashboard-2-hr-workforce/Dashboard2_HR_BuildGuide.html) |
+| 📂 **Dataset** | [Download Excel data →](https://github.com/lasemajek12-max/data-analytics-portfolio/raw/main/dashboard-2-hr-workforce/Dashboard2_HR_Workforce_Data.xlsx) |
 
 ---
 
@@ -82,7 +82,8 @@ A 3-page interactive HR dashboard covering workforce headcount, attrition analys
 I'm actively seeking data analyst, BI developer, and analytics engineer roles in the Netherlands and across Europe.
 
 - 📧 **Email:** lasemajek12@gmail.com
-- 💼 **LinkedIn:** [tolu-majek124](https://www.linkedin.com/in/tolu-majek124)
+- 💼 **LinkedIn:** [linkedin.com/in/tolu-majek124](https://www.linkedin.com/in/tolu-majek124/)
+- 🐙 **GitHub:** [github.com/lasemajek12-max](https://github.com/lasemajek12-max)
 - 📍 **Location:** Amsterdam, Netherlands (open to hybrid/remote)
 
 ---
