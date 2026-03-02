@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build Guide – Sales & Revenue Analytics | Toluwalase Majekodunmi</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #222; }
+
+  header { background: linear-gradient(135deg, #1F4E79, #2980b9); color: #fff; padding: 20px 36px; box-shadow: 0 3px 12px rgba(0,0,0,0.2); }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header p { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+  .header-tags { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .tag { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 600; }
+
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 0; min-height: calc(100vh - 100px); }
+
+  /* Sidebar */
+  .sidebar { background: #fff; border-right: 1px solid #e8e8e8; padding: 24px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .sidebar-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #aaa; font-weight: 700; padding: 0 20px 10px; }
+  .nav-item { padding: 11px 20px; cursor: pointer; font-size: 13px; color: #555; border-left: 3px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
+  .nav-item:hover { background: #f0f6ff; color: #1F4E79; border-left-color: #a8c9e8; }
+  .nav-item.active { background: #dbeafe; color: #1F4E79; border-left-color: #1F4E79; font-weight: 700; }
+  .nav-item .num { background: #1F4E79; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .nav-item.active .num { background: #1F4E79; }
+  .nav-divider { height: 1px; background: #f0f0f0; margin: 8px 0; }
+
+  /* Content */
+  .content { padding: 32px 40px; }
+  .content h2 { font-size: 22px; color: #1F4E79; font-weight: 700; margin-bottom: 6px; }
+  .content .subtitle { font-size: 13px; color: #888; margin-bottom: 28px; }
+
+  .step { background: #fff; border-radius: 14px; padding: 28px 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 24px; scroll-margin-top: 24px; }
+  .step-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .step-num { background: #1F4E79; color: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+  .step-title { font-size: 17px; font-weight: 700; color: #1F4E79; }
+  .step-time { font-size: 11px; color: #aaa; font-weight: 400; margin-left: auto; }
+
+  p { font-size: 14px; color: #444; line-height: 1.75; margin-bottom: 12px; }
+  ul, ol { padding-left: 22px; margin-bottom: 12px; }
+  li { font-size: 13px; color: #444; line-height: 1.85; }
+  strong { color: #222; }
+  code { background: #f0f4f8; padding: 2px 7px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px; color: #1F4E79; }
+
+  .tip { background: #e8f5e9; border-left: 4px solid #28a745; border-radius: 0 10px 10px 0; padding: 12px 18px; margin: 14px 0; font-size: 13px; color: #155724; line-height: 1.6; }
+  .warn { background: #fff8e1; border-left: 4px solid #ffc107; border-radius: 0 10px 10px 0; padding: 12px 18px; margin: 14px 0; font-size: 13px; color: #856404; line-height: 1.6; }
+  .info { background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 0 10px 10px 0; padding: 12px 18px; margin: 14px 0; font-size: 13px; color: #0d47a1; line-height: 1.6; }
+
+  .dax { background: #0d1117; color: #e6edf3; border-radius: 10px; padding: 18px 22px; font-family: 'Courier New', monospace; font-size: 12.5px; line-height: 2; margin: 14px 0; overflow-x: auto; }
+  .dax .fn { color: #d2a8ff; }
+  .dax .var { color: #79c0ff; }
+  .dax .str { color: #a5d6ff; }
+  .dax .num { color: #f0883e; }
+  .dax .comment { color: #6a7f94; }
+
+  .spec-box { background: #f8fbff; border: 1.5px dashed #1F4E79; border-radius: 10px; padding: 18px 20px; margin: 14px 0; }
+  .spec-title { font-weight: 700; color: #1F4E79; font-size: 13px; margin-bottom: 10px; }
+  .spec-row { display: flex; gap: 12px; margin-bottom: 6px; font-size: 13px; }
+  .spec-key { font-weight: 600; color: #555; min-width: 100px; }
+  .spec-val { color: #222; }
+
+  .layout-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 16px 0; }
+  .layout-box { background: #dbeafe; border: 2px dashed #1F4E79; border-radius: 8px; padding: 12px; text-align: center; font-size: 11px; font-weight: 700; color: #1e40af; min-height: 56px; display: flex; align-items: center; justify-content: center; }
+  .layout-box.full { grid-column: 1 / -1; }
+  .layout-box.span2 { grid-column: span 2; }
+
+  .portfolio { background: linear-gradient(135deg, #1F4E79, #2980b9); color: #fff; border-radius: 12px; padding: 24px 28px; margin-top: 8px; }
+  .portfolio h3 { font-size: 15px; margin-bottom: 10px; font-weight: 700; }
+  .portfolio p { font-size: 13px; line-height: 1.75; opacity: 0.92; color: #fff; margin-bottom: 10px; }
+  .portfolio p:last-child { margin-bottom: 0; }
+
+  footer { background: #1F4E79; color: rgba(255,255,255,0.7); text-align: center; padding: 14px; font-size: 11px; }
+
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } .sidebar { position: relative; height: auto; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📋 Build Guide — Sales & Revenue Analytics Dashboard</h1>
+  <p>Step-by-step instructions to recreate this dashboard in Power BI Desktop · Beginner friendly</p>
+  <div class="header-tags">
+    <span class="tag">Power BI</span><span class="tag">DAX</span><span class="tag">SQL</span>
+    <span class="tag">Excel · Power Query</span><span class="tag">⏱ Est. 2–3 hrs</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-title">Steps</div>
+    <div class="nav-item active" onclick="goTo('s1', this)"><span class="num">1</span> Load the Data</div>
+    <div class="nav-item" onclick="goTo('s2', this)"><span class="num">2</span> Build Data Model</div>
+    <div class="nav-item" onclick="goTo('s3', this)"><span class="num">3</span> Create DAX Measures</div>
+    <div class="nav-item" onclick="goTo('s4', this)"><span class="num">4</span> Page Layout</div>
+    <div class="nav-item" onclick="goTo('s5', this)"><span class="num">5</span> Build Each Visual</div>
+    <div class="nav-item" onclick="goTo('s6', this)"><span class="num">6</span> Slicers & Filters</div>
+    <div class="nav-item" onclick="goTo('s7', this)"><span class="num">7</span> Format & Polish</div>
+    <div class="nav-item" onclick="goTo('s8', this)"><span class="num">8</span> Portfolio Text</div>
+  </nav>
+
+  <div class="content">
+    <h2>Sales & Revenue Analytics — Power BI Build Guide</h2>
+    <p class="subtitle">Use the Excel file <strong>Dashboard1_Sales_Revenue_Data.xlsx</strong> alongside this guide. Follow each step in order.</p>
+
+    <!-- STEP 1 -->
+    <div class="step" id="s1">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div class="step-title">Load the Data into Power BI</div>
+        <span class="step-time">⏱ ~15 min</span>
+      </div>
+      <p>Download <strong>Dashboard1_Sales_Revenue_Data.xlsx</strong> from this repository. It contains 4 sheets with 1,200 simulated forex transactions.</p>
+      <ol>
+        <li>Open <strong>Power BI Desktop</strong> (free at powerbi.microsoft.com)</li>
+        <li>Click <strong>Get Data → Excel Workbook</strong> → select the file</li>
+        <li>In the Navigator, tick all 4 sheets: <strong>Sales_Transactions · Monthly_Targets · Client_Retention · Sales_Rep_KPIs</strong></li>
+        <li>Click <strong>Transform Data</strong> to open Power Query Editor</li>
+        <li>For each table, verify <strong>Home → Use First Row as Headers</strong> is applied</li>
+        <li>Set column types: Date → <em>Date</em> · Revenue/Cost → <em>Decimal Number</em> · IDs → <em>Text</em></li>
+        <li>Click <strong>Close & Apply</strong></li>
+      </ol>
+      <div class="tip">✅ If the Date column shows as text, click the column header type icon and select <strong>Date</strong></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step" id="s2">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div class="step-title">Build the Data Model (Relationships)</div>
+        <span class="step-time">⏱ ~10 min</span>
+      </div>
+      <p>Click the <strong>Model view</strong> icon (3rd icon on the left sidebar). Create these relationships by dragging fields between tables:</p>
+      <ul>
+        <li><code>Sales_Transactions[Sales_Rep]</code> → <code>Sales_Rep_KPIs[Sales_Rep]</code></li>
+        <li><code>Sales_Transactions[Month]</code> → <code>Monthly_Targets[Month]</code></li>
+        <li><code>Sales_Transactions[Client_ID]</code> → <code>Client_Retention[Client_ID]</code></li>
+      </ul>
+      <div class="tip">✅ To create a relationship: drag a field from one table and drop it onto the matching field in another table</div>
+      <div class="warn">⚠️ Keep all relationship directions as <strong>Single</strong> (not Both) to avoid circular dependency errors</div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step" id="s3">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div class="step-title">Create DAX Measures</div>
+        <span class="step-time">⏱ ~20 min</span>
+      </div>
+      <p>In Report view, right-click <strong>Sales_Transactions</strong> table in the Fields pane → <strong>New Measure</strong>. Create each measure below, then press Enter.</p>
+
+      <div class="spec-title" style="margin-top:14px;color:#1F4E79;font-weight:700">Total Revenue</div>
+      <div class="dax"><span class="var">Total Revenue</span> = <span class="fn">SUM</span>(Sales_Transactions[Revenue_USD])</div>
+
+      <div class="spec-title" style="color:#1F4E79;font-weight:700">Total Profit</div>
+      <div class="dax"><span class="var">Total Profit</span> = <span class="fn">SUM</span>(Sales_Transactions[Profit_USD])</div>
+
+      <div class="spec-title" style="color:#1F4E79;font-weight:700">Profit Margin %</div>
+      <div class="dax"><span class="var">Profit Margin %</span> = <span class="fn">DIVIDE</span>([Total Profit], [Total Revenue], <span class="num">0</span>)</div>
+
+      <div class="spec-title" style="color:#1F4E79;font-weight:700">Total Deals</div>
+      <div class="dax"><span class="var">Total Deals</span> = <span class="fn">COUNTROWS</span>(Sales_Transactions)</div>
+
+      <div class="spec-title" style="color:#1F4E79;font-weight:700">Avg Deal Size</div>
+      <div class="dax"><span class="var">Avg Deal Size</span> = <span class="fn">DIVIDE</span>([Total Revenue], [Total Deals], <span class="num">0</span>)</div>
+
+      <div class="spec-title" style="color:#1F4E79;font-weight:700">Target Attainment %</div>
+      <div class="dax"><span class="var">Target Attainment %</span> =
+  <span class="fn">DIVIDE</span>(
+    <span class="fn">SUM</span>(Monthly_Targets[Actual_USD]),
+    <span class="fn">SUM</span>(Monthly_Targets[Target_USD]),
+    <span class="num">0</span>
+  )</div>
+
+      <div class="spec-title" style="color:#1F4E79;font-weight:700">Revenue vs Target Variance</div>
+      <div class="dax"><span class="var">Revenue vs Target</span> =
+  <span class="fn">SUMX</span>(
+    Monthly_Targets,
+    Monthly_Targets[Actual_USD] - Monthly_Targets[Target_USD]
+  )</div>
+
+      <div class="tip">✅ Format currency measures: select the measure → Measure Tools tab → Format: <strong>Currency · 0 decimal places</strong><br>Format Profit Margin % and Target Attainment % as <strong>Percentage · 1 decimal place</strong></div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step" id="s4">
+      <div class="step-header">
+        <div class="step-num">4</div>
+        <div class="step-title">Design the Page Layout (3 Pages)</div>
+        <span class="step-time">⏱ ~15 min</span>
+      </div>
+      <p>Right-click the page tab at the bottom to add and rename pages:</p>
+      <ul>
+        <li><strong>Page 1</strong> — Executive Overview</li>
+        <li><strong>Page 2</strong> — Sales Rep Performance</li>
+        <li><strong>Page 3</strong> — Client & Product Deep Dive</li>
+      </ul>
+      <p>Set canvas background: <strong>Format → Canvas background → Color</strong> → enter <code>#F0F4F8</code></p>
+      <p>Add a header: <strong>Insert → Shapes → Rectangle</strong> → fill color <code>#1F4E79</code>, full width, ~55px height. Then <strong>Insert → Text Box</strong> on top: white text, 16pt bold.</p>
+
+      <div class="spec-title" style="margin-top:16px;color:#1F4E79;font-weight:700">Page 1 Layout Blueprint</div>
+      <div class="layout-grid">
+        <div class="layout-box full">🔷 Header: Dashboard Title + Date Range</div>
+        <div class="layout-box">💳 KPI: Revenue</div>
+        <div class="layout-box">💳 KPI: Profit</div>
+        <div class="layout-box">💳 KPI: Deals</div>
+        <div class="layout-box span2">📈 Line: Monthly Revenue vs Target</div>
+        <div class="layout-box">🍩 Donut: Product Split</div>
+        <div class="layout-box">📊 Bar: Revenue by Region</div>
+        <div class="layout-box">🏆 Table: Top Reps</div>
+        <div class="layout-box">🔻 Funnel: Client Segment</div>
+        <div class="layout-box full">📋 Transaction Table (bottom)</div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step" id="s5">
+      <div class="step-header">
+        <div class="step-num">5</div>
+        <div class="step-title">Build Each Visual — Exact Settings</div>
+        <span class="step-time">⏱ ~60 min</span>
+      </div>
+
+      <div class="spec-box">
+        <div class="spec-title">💳 KPI Cards (×4)</div>
+        <div class="spec-row"><span class="spec-key">Visual type</span><span class="spec-val">Card</span></div>
+        <div class="spec-row"><span class="spec-key">Fields</span><span class="spec-val">Total Revenue / Total Profit / Total Deals / Avg Deal Size (one per card)</span></div>
+        <div class="spec-row"><span class="spec-key">Format</span><span class="spec-val">White background · Bold 28pt value · No category label · Rounded corners 8px</span></div>
+        <div class="spec-row"><span class="spec-key">Border</span><span class="spec-val">Format → Visual border → Left border only → 4px · Color matches KPI accent color</span></div>
+      </div>
+
+      <div class="spec-box">
+        <div class="spec-title">📈 Line Chart: Monthly Revenue vs Target</div>
+        <div class="spec-row"><span class="spec-key">Visual type</span><span class="spec-val">Line Chart</span></div>
+        <div class="spec-row"><span class="spec-key">X-axis</span><span class="spec-val">Sales_Transactions[Month] — sort by date ascending</span></div>
+        <div class="spec-row"><span class="spec-key">Y-axis</span><span class="spec-val">Total Revenue (primary line)</span></div>
+        <div class="spec-row"><span class="spec-key">Secondary</span><span class="spec-val">SUM(Monthly_Targets[Target_USD]) — set as dashed line, color #ccc</span></div>
+        <div class="spec-row"><span class="spec-key">Colors</span><span class="spec-val">Revenue: #1F4E79 · Target: #CBD5E0 dashed</span></div>
+      </div>
+
+      <div class="spec-box">
+        <div class="spec-title">🍩 Donut Chart: Revenue by Product</div>
+        <div class="spec-row"><span class="spec-key">Visual type</span><span class="spec-val">Donut Chart</span></div>
+        <div class="spec-row"><span class="spec-key">Legend</span><span class="spec-val">Sales_Transactions[Product]</span></div>
+        <div class="spec-row"><span class="spec-key">Values</span><span class="spec-val">Total Revenue</span></div>
+        <div class="spec-row"><span class="spec-key">Detail labels</span><span class="spec-val">On · Show percentage of total</span></div>
+        <div class="spec-row"><span class="spec-key">Colors</span><span class="spec-val">#1F4E79 · #2980b9 · #5dade2 · #a8d8ea · #d6eef8</span></div>
+      </div>
+
+      <div class="spec-box">
+        <div class="spec-title">📊 Clustered Bar: Revenue by Region</div>
+        <div class="spec-row"><span class="spec-key">Visual type</span><span class="spec-val">Clustered Bar Chart (horizontal)</span></div>
+        <div class="spec-row"><span class="spec-key">Y-axis</span><span class="spec-val">Sales_Transactions[Region]</span></div>
+        <div class="spec-row"><span class="spec-key">X-axis</span><span class="spec-val">Total Revenue</span></div>
+        <div class="spec-row"><span class="spec-key">Sort</span><span class="spec-val">Descending by Total Revenue</span></div>
+        <div class="spec-row"><span class="spec-key">Data labels</span><span class="spec-val">On · Inside end · White text</span></div>
+      </div>
+
+      <div class="spec-box">
+        <div class="spec-title">📋 Table: Sales Rep Performance</div>
+        <div class="spec-row"><span class="spec-key">Visual type</span><span class="spec-val">Table</span></div>
+        <div class="spec-row"><span class="spec-key">Columns</span><span class="spec-val">Sales_Rep · Total Revenue · Total Deals · Avg Deal Size · Target Attainment %</span></div>
+        <div class="spec-row"><span class="spec-key">Conditional fmt</span><span class="spec-val">Target Attainment %: Background color — Green ≥100% · Amber 80–99% · Red &lt;80%</span></div>
+        <div class="spec-row"><span class="spec-key">Sort</span><span class="spec-val">Descending by Total Revenue</span></div>
+      </div>
+
+      <div class="tip">✅ To add conditional formatting: select the visual → Format → Cells elements → Background color → Field value rules → set your thresholds</div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step" id="s6">
+      <div class="step-header">
+        <div class="step-num">6</div>
+        <div class="step-title">Add Slicers & Filters</div>
+        <span class="step-time">⏱ ~15 min</span>
+      </div>
+      <p>Slicers let viewers interactively filter the whole report. Insert these on Page 1:</p>
+      <ul>
+        <li><strong>Insert → Slicer</strong> → Field: <code>Year</code> → Style: Tile</li>
+        <li><strong>Insert → Slicer</strong> → Field: <code>Quarter</code> → Style: Tile</li>
+        <li><strong>Insert → Slicer</strong> → Field: <code>Region</code> → Style: Dropdown</li>
+        <li><strong>Insert → Slicer</strong> → Field: <code>Client_Segment</code> → Style: Dropdown</li>
+        <li><strong>Insert → Slicer</strong> → Field: <code>Product</code> → Style: Dropdown</li>
+      </ul>
+      <p>To sync slicers across all 3 pages: <strong>View → Sync Slicers</strong> → enable all pages for each slicer.</p>
+      <div class="tip">✅ Style slicers to match: Format → Slicer header → Background <code>#1F4E79</code> · Text color white · Font size 11pt</div>
+    </div>
+
+    <!-- STEP 7 -->
+    <div class="step" id="s7">
+      <div class="step-header">
+        <div class="step-num">7</div>
+        <div class="step-title">Format & Polish</div>
+        <span class="step-time">⏱ ~20 min</span>
+      </div>
+      <ul>
+        <li><strong>Font:</strong> Set all visuals to <em>Segoe UI</em> — consistent, professional</li>
+        <li><strong>Colour palette:</strong> Stick to <code>#1F4E79</code> · <code>#2980b9</code> · <code>#28a745</code> · <code>#dc3545</code> · <code>#fd7e14</code> only</li>
+        <li><strong>Borders:</strong> All visuals → Format → Visual border → <strong>OFF</strong></li>
+        <li><strong>Shadows:</strong> Format → Shadow → <strong>ON</strong> (2px offset, subtle)</li>
+        <li><strong>Grid lines:</strong> Turn OFF x-axis and y-axis gridlines on bar charts</li>
+        <li><strong>Titles:</strong> Every visual needs a clear bold title in dark blue</li>
+        <li><strong>Spacing:</strong> Leave ~12px gap between every card</li>
+        <li><strong>Format Painter:</strong> Use the paint roller icon in the toolbar to copy formatting from one visual to all others instantly</li>
+      </ul>
+      <div class="info">💡 Bonus: Add <strong>Tooltips</strong> to all charts. Hover-on-hover data is very impressive during live demo presentations to interviewers.</div>
+    </div>
+
+    <!-- STEP 8 -->
+    <div class="step" id="s8">
+      <div class="step-header">
+        <div class="step-num">8</div>
+        <div class="step-title">Portfolio Description — Copy & Paste Ready</div>
+        <span class="step-time"></span>
+      </div>
+
+      <div class="portfolio">
+        <h3>📝 CV Bullet Point</h3>
+        <p>Built an end-to-end Sales & Revenue Analytics dashboard in Power BI analyzing 1,200+ transactions across 4 regions, incorporating DAX measures for KPI tracking (revenue, profit margin, target attainment), slicer-driven interactivity, and conditional formatting — enabling real-time visibility into sales rep performance and client segment profitability.</p>
+      </div>
+
+      <div class="portfolio" style="margin-top:14px;background:linear-gradient(135deg,#155724,#28a745)">
+        <h3>📝 LinkedIn Project Description</h3>
+        <p>🔷 Project: Sales & Revenue Analytics Dashboard | Power BI</p>
+        <p>Designed a 3-page interactive Power BI report for a fictional forex brokerage, covering executive KPI overview, rep performance leaderboard, and client/product deep dive. Stack: Power BI · DAX · Power Query · Excel. Features: dynamic slicers, conditional formatting, revenue vs target trend analysis. Dataset: 1,200 simulated transactions · $8.47M revenue · 2022–2023.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  Built by Toluwalase Majekodunmi &nbsp;·&nbsp; Tools: Power BI · DAX · SQL · Excel · Power Query
+</footer>
+
+<script>
+  function goTo(id, el) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>
