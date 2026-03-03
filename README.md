@@ -1,9 +1,9 @@
-# 📈 Forex Trading Performance — Exploratory Data Analysis
+# 🔄 Retail Sales Data Cleaning & Automation Pipeline
 
 ![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
-![Matplotlib](https://img.shields.io/badge/Matplotlib-Seaborn-11557c?style=for-the-badge)
-![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
+![openpyxl](https://img.shields.io/badge/openpyxl-Excel%20Export-217346?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Tested%20%26%20Working-27ae60?style=for-the-badge)
 
 > **Author:** Toluwalase Majekodunmi · [LinkedIn](https://www.linkedin.com/in/tolu-majek124/) · [Portfolio](https://lasemajek12-max.github.io/data-analytics-portfolio/)
 
@@ -11,69 +11,108 @@
 
 ## 📌 Project Overview
 
-End-to-end exploratory data analysis of 1,200 simulated forex brokerage transactions across 8 sales reps, 4 regions, 5 products, and 2 years (2022–2023). Reflects real analytical work performed at **Tixee Forex Brokerage, Kyiv**.
+A production-ready 9-step Python automation pipeline that ingests raw retail CSV/Excel sales files, cleans and validates the data, engineers business features, and exports a clean dataset + flagged records + formatted Excel summary report.
+
+**Replaces 12+ hours/week of manual Excel processing** — reflecting real automation work at Jumbo Supermarkten, Amsterdam.
 
 ---
 
-## 🎯 Business Questions Answered
+## ⚙️ Pipeline Steps
 
-1. What is the overall revenue and profit margin trend month-on-month?
-2. Which products and client segments drive the most profit?
-3. Are there seasonal patterns in trading volume and revenue?
-4. Which sales reps are over/underperforming against targets?
-5. What is the relationship between deal size and profit margin?
-6. Which regions show the strongest growth trajectory?
+```
+RAW CSV / EXCEL
+      │
+      ▼
+┌─────────────────────────────────────┐
+│  Step 1 │ Load file (CSV or Excel)  │
+│  Step 2 │ Schema validation         │
+│  Step 3 │ Data type enforcement     │
+│  Step 4 │ Null detection & imputing │
+│  Step 5 │ Duplicate removal         │
+│  Step 6 │ Business rule validation  │
+│  Step 7 │ Feature engineering       │
+│  Step 8 │ Summary report generation │
+│  Step 9 │ Export (CSV + Excel)      │
+└─────────────────────────────────────┘
+      │
+      ├── data/processed/  →  clean_data.csv
+      ├── data/processed/  →  flagged_rows.csv
+      └── data/reports/    →  monthly_summary.xlsx
+```
 
 ---
 
-## 📊 Analysis Sections
+## 🔑 Data Quality Checks Performed
 
-| Section | What It Covers |
+| Check | What It Catches |
 |---|---|
-| 1. Data Generation | Simulating realistic trading data with Pandas + NumPy |
-| 2. Data Cleaning | Null checks, duplicate detection, outlier analysis |
-| 3. KPI Dashboard | Revenue, profit, margin, deal count, completion rate |
-| 4. Monthly Trend | Revenue vs profit trend, MoM growth, margin % |
-| 5. Rep Performance | Revenue, avg deal size, target attainment by rep |
-| 6. Product & Segment | Donut chart + bar breakdown by product/segment |
-| 7. Correlation | Deal size vs margin scatter, box plots by product |
-| 8. Regional Analysis | Monthly trend lines + total revenue by region |
-| 9. Key Findings | Summary of insights + business recommendations |
+| Schema validation | Missing or misspelled column names |
+| Type enforcement | Dates stored as strings, numbers as text |
+| Null detection | Missing values in critical and non-critical fields |
+| Duplicate removal | Exact duplicate rows + duplicate transaction IDs |
+| Business rules | Negative prices, impossible discounts, future dates |
+
+---
+
+## 🛠️ Feature Engineering Output
+
+The pipeline adds 12 derived columns including:
+
+- `gross_revenue`, `discount_amount`, `net_revenue`
+- `est_cost`, `gross_profit`, `margin_pct`
+- `year`, `month`, `month_name`, `quarter`, `day_of_week`, `week_number`
 
 ---
 
 ## 🔑 Python Techniques Demonstrated
 
-- **Pandas:** `groupby`, `agg`, `merge`, `pct_change`, `dt` accessor, `to_period`
-- **NumPy:** `random`, `polyfit`, `linspace`, `clip`, `sort`
-- **Matplotlib:** Multi-panel subplots, `fill_between`, `barh`, `scatter`, `boxplot`
-- **Seaborn:** Color palettes, distribution styling
-- **Data Cleaning:** IQR outlier detection, null checks, type validation
-- **Derived Metrics:** Margin %, MoM growth, target attainment, running totals
+- **Pandas:** `read_csv`, `read_excel`, `to_datetime`, `dropna`, `fillna`, `groupby`, `agg`, `drop_duplicates`, `pd.ExcelWriter`
+- **NumPy:** `where`, `random`, vectorised operations
+- **openpyxl:** Excel export with column width formatting
+- **Logging:** Structured timestamped logging across all pipeline steps
+- **Pathlib:** Cross-platform file path handling
+- **OOP patterns:** Modular functions with clear single responsibilities
+- **Error handling:** Try/catch with informative failure logging
 
 ---
 
 ## 🚀 How to Run
 
-**Option 1 — Jupyter Notebook (recommended):**
 ```bash
-pip install pandas numpy matplotlib seaborn
-jupyter notebook forex_trading_eda.ipynb
+# Install dependencies
+pip install pandas numpy openpyxl
+
+# Run with demo data (generates sample CSV with quality issues automatically)
+python retail_data_pipeline.py
+
+# Run on your own file
+python -c "from retail_data_pipeline import run_pipeline; run_pipeline('your_file.csv')"
 ```
 
-**Option 2 — Google Colab (no install needed):**
-Upload `forex_trading_eda.ipynb` to [colab.research.google.com](https://colab.research.google.com) and run all cells.
+**Expected output:**
+```
+2024-01-15 09:00:01  INFO      Pipeline START — demo_sales.csv
+2024-01-15 09:00:01  WARNING   15 nulls detected in: category (15)
+2024-01-15 09:00:01  WARNING   Removed 1 exact duplicates, 1 duplicate IDs
+2024-01-15 09:00:01  WARNING   8 rows flagged with business rule violations
+2024-01-15 09:00:01  INFO      Clean: 492 | Flagged: 8
+2024-01-15 09:00:01  INFO      Pipeline COMPLETE in 0.4s ✅
+```
 
 ---
 
 ## 📁 Files
 
 ```
-project-4-python-eda-forex/
-├── forex_trading_eda.ipynb    ← Full EDA notebook
-└── README.md                  ← This file
+project-5-python-automation-pipeline/
+├── retail_data_pipeline.py    ← Full 9-step pipeline script
+├── README.md                  ← This file
+├── data/
+│   ├── raw/                   ← Input files go here
+│   ├── processed/             ← Clean + flagged CSVs exported here
+│   └── reports/               ← Monthly Excel reports exported here
 ```
 
 ---
 
-*Dataset is simulated for portfolio purposes. Analysis reflects the business context of a real forex brokerage environment.*
+*Dataset is simulated. Pipeline logic reflects real retail data engineering work.*
