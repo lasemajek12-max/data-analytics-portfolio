@@ -1,91 +1,79 @@
-# 📊 Data Analytics Portfolio — Toluwalase Majekodunmi
+# 📈 Forex Trading Performance — Exploratory Data Analysis
 
-![Power BI](https://img.shields.io/badge/Power%20BI-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)
-![Excel](https://img.shields.io/badge/Microsoft%20Excel-217346?style=for-the-badge&logo=microsoftexcel&logoColor=white)
-![DAX](https://img.shields.io/badge/DAX-0078D4?style=for-the-badge&logo=microsoft&logoColor=white)
-![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-Seaborn-11557c?style=for-the-badge)
+![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
 
-> **Data Analyst | Business Intelligence | Analytics Engineer**  
-> Amsterdam, Netherlands · [LinkedIn](https://www.linkedin.com/in/tolu-majek124/) · lasemajek12@gmail.com
+> **Author:** Toluwalase Majekodunmi · [LinkedIn](https://www.linkedin.com/in/tolu-majek124/) · [Portfolio](https://lasemajek12-max.github.io/data-analytics-portfolio/)
 
 ---
 
-## 👋 About Me
+## 📌 Project Overview
 
-Results-driven Data Analyst with 6+ years of experience across retail, financial services, and operations. I translate complex datasets into actionable business insights using Power BI, SQL, Excel, and Python. Currently based in Amsterdam and open to data analyst, BI developer, and analytics engineer roles.
-
-**Certifications:** IBM Data Science Professional Certificate · Microsoft Excel & Power BI (Macquarie University)  
-**Education:** MSc International Business Management · BSc Accounting
+End-to-end exploratory data analysis of 1,200 simulated forex brokerage transactions across 8 sales reps, 4 regions, 5 products, and 2 years (2022–2023). Reflects real analytical work performed at **Tixee Forex Brokerage, Kyiv**.
 
 ---
 
-## 📁 Portfolio Projects
+## 🎯 Business Questions Answered
 
-### 1. 📈 Sales & Revenue Analytics Dashboard
-**Tools:** Power BI · DAX · SQL · Excel · Power Query
+1. What is the overall revenue and profit margin trend month-on-month?
+2. Which products and client segments drive the most profit?
+3. Are there seasonal patterns in trading volume and revenue?
+4. Which sales reps are over/underperforming against targets?
+5. What is the relationship between deal size and profit margin?
+6. Which regions show the strongest growth trajectory?
 
-An end-to-end sales performance dashboard built for a fictional forex brokerage, analyzing **1,200 transactions** across **4 regions** and **6 products** over a 2-year period.
+---
 
-**Key features:**
-- KPI tracking: Total Revenue ($8.47M), Profit Margin, Deal Volume, Avg Deal Size
-- Monthly Revenue vs Target trend analysis with variance indicators
-- Sales rep performance leaderboard with conditional formatting (target attainment %)
-- Client segment revenue breakdown (VIP, Corporate, Institutional, Retail)
-- Dynamic slicers for Year, Quarter, Region, Segment — synced across 3 report pages
-- 7 DAX measures including `DIVIDE`, `COUNTROWS`, `SUMX` for business KPIs
+## 📊 Analysis Sections
 
-| | |
+| Section | What It Covers |
 |---|---|
-| 🔗 **Live Preview** | [View Dashboard →](https://lasemajek12-max.github.io/data-analytics-portfolio/dashboard-1-sales-revenue/Dashboard1_Sales_Preview.html) |
-| 📋 **Build Guide** | [Step-by-step Power BI instructions →](https://lasemajek12-max.github.io/data-analytics-portfolio/dashboard-1-sales-revenue/Dashboard1_Sales_BuildGuide.html) |
-| 📂 **Dataset** | [Download Excel data →](https://github.com/lasemajek12-max/data-analytics-portfolio/raw/main/dashboard-1-sales-revenue/Dashboard1_Sales_Revenue_Data.xlsx) |
+| 1. Data Generation | Simulating realistic trading data with Pandas + NumPy |
+| 2. Data Cleaning | Null checks, duplicate detection, outlier analysis |
+| 3. KPI Dashboard | Revenue, profit, margin, deal count, completion rate |
+| 4. Monthly Trend | Revenue vs profit trend, MoM growth, margin % |
+| 5. Rep Performance | Revenue, avg deal size, target attainment by rep |
+| 6. Product & Segment | Donut chart + bar breakdown by product/segment |
+| 7. Correlation | Deal size vs margin scatter, box plots by product |
+| 8. Regional Analysis | Monthly trend lines + total revenue by region |
+| 9. Key Findings | Summary of insights + business recommendations |
 
 ---
 
-### 2. 👥 HR & Workforce Analytics Dashboard
-**Tools:** Power BI · DAX · Power Query · Excel
+## 🔑 Python Techniques Demonstrated
 
-A 3-page interactive HR dashboard covering workforce headcount, attrition analysis, performance management, diversity metrics, and recruitment pipeline tracking across **214 employees** and **8 departments**.
-
-**Key features:**
-- Attrition rate tracking (11.4%) with department-level drill-down and trend analysis
-- Recruitment funnel from 1,842 applications → 67 hires (75% offer acceptance rate)
-- Performance distribution and promotion eligibility matrix with conditional formatting
-- Workforce diversity breakdown by gender and seniority level
-- Salary benchmarking across Junior, Senior, and Director levels
-- Bookmark-driven interactive storytelling for executive presentation mode
-
-| | |
-|---|---|
-| 🔗 **Live Preview** | [View Dashboard →](https://lasemajek12-max.github.io/data-analytics-portfolio/dashboard-2-hr-workforce/Dashboard2_HR_Preview.html) |
-| 📋 **Build Guide** | [Step-by-step Power BI instructions →](https://lasemajek12-max.github.io/data-analytics-portfolio/dashboard-2-hr-workforce/Dashboard2_HR_BuildGuide.html) |
-| 📂 **Dataset** | [Download Excel data →](https://github.com/lasemajek12-max/data-analytics-portfolio/raw/main/dashboard-2-hr-workforce/Dashboard2_HR_Workforce_Data.xlsx) |
+- **Pandas:** `groupby`, `agg`, `merge`, `pct_change`, `dt` accessor, `to_period`
+- **NumPy:** `random`, `polyfit`, `linspace`, `clip`, `sort`
+- **Matplotlib:** Multi-panel subplots, `fill_between`, `barh`, `scatter`, `boxplot`
+- **Seaborn:** Color palettes, distribution styling
+- **Data Cleaning:** IQR outlier detection, null checks, type validation
+- **Derived Metrics:** Margin %, MoM growth, target attainment, running totals
 
 ---
 
-## 🛠️ Technical Skills
+## 🚀 How to Run
 
-| Category | Tools & Technologies |
-|---|---|
-| **BI & Visualisation** | Power BI · DAX · Tableau · Data Storytelling |
-| **Data Engineering** | SQL · ETL · Data Modeling · Power Query · Data Governance |
-| **Programming** | Python (Pandas, NumPy) · Statistical Analysis |
-| **Business Systems** | SAP · QuickBooks · ERP · CRM Systems |
-| **Spreadsheets** | Advanced Excel (PivotTables, VLOOKUP, INDEX-MATCH, Power Query) |
-| **Methodology** | Agile · Stakeholder Management · A/B Testing · KPI Development |
+**Option 1 — Jupyter Notebook (recommended):**
+```bash
+pip install pandas numpy matplotlib seaborn
+jupyter notebook forex_trading_eda.ipynb
+```
 
----
-
-## 📬 Get In Touch
-
-I'm actively seeking data analyst, BI developer, and analytics engineer roles in the Netherlands and across Europe.
-
-- 📧 **Email:** lasemajek12@gmail.com
-- 💼 **LinkedIn:** [linkedin.com/in/tolu-majek124](https://www.linkedin.com/in/tolu-majek124/)
-- 🐙 **GitHub:** [github.com/lasemajek12-max](https://github.com/lasemajek12-max)
-- 📍 **Location:** Amsterdam, Netherlands (open to hybrid/remote)
+**Option 2 — Google Colab (no install needed):**
+Upload `forex_trading_eda.ipynb` to [colab.research.google.com](https://colab.research.google.com) and run all cells.
 
 ---
 
-*All datasets in this repository are simulated and generated for portfolio demonstration purposes only.*
+## 📁 Files
+
+```
+project-4-python-eda-forex/
+├── forex_trading_eda.ipynb    ← Full EDA notebook
+└── README.md                  ← This file
+```
+
+---
+
+*Dataset is simulated for portfolio purposes. Analysis reflects the business context of a real forex brokerage environment.*
