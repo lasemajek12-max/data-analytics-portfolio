@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forex Trading EDA — Toluwalase Majekodunmi</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0f0e0b;
+    --surface: #181610;
+    --card:    #1e1c15;
+    --border:  #2c2820;
+    --accent:  #f5a623;
+    --accent2: #f7c560;
+    --green:   #6fcf97;
+    --blue:    #56ccf2;
+    --red:     #eb5757;
+    --text:    #ede8dc;
+    --muted:   #8a8070;
+    --py:      #a8d8a8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 10% 20%, rgba(245,166,35,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(86,204,242,0.04) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: relative; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 52px;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; z-index: 1;
+    padding: 80px 52px 64px;
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 340px; gap: 60px; align-items: center;
+  }
+  .hero-left {}
+  .project-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 4px;
+    padding: 5px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 5vw, 64px);
+    font-weight: 900; line-height: 1.08;
+    margin-bottom: 8px;
+  }
+  h1 .italic { font-style: italic; color: var(--accent); font-weight: 400; }
+  .subtitle {
+    font-size: 16px; color: var(--muted); line-height: 1.75;
+    max-width: 500px; margin-bottom: 32px;
+  }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: var(--bg);
+    padding: 11px 26px; border-radius: 4px;
+    font-size: 13px; font-weight: 700;
+    text-decoration: none; transition: opacity 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-ghost {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 11px 26px; border-radius: 4px;
+    font-size: 13px; text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── HERO STATS CARD ── */
+  .hero-stats {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    position: relative; overflow: hidden;
+  }
+  .hero-stats::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
+  }
+  .stat-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-key { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .stat-val { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--accent); }
+
+  /* ── DIVIDER ── */
+  hr { border: none; border-top: 1px solid var(--border); max-width: 1100px; margin: 0 auto 64px; }
+
+  /* ── SECTION ── */
+  .section { max-width: 1100px; margin: 0 auto; padding: 0 52px 72px; position: relative; z-index: 1; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 18px;
+  }
+  .section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px; font-weight: 700; margin-bottom: 30px;
+  }
+
+  /* ── FINDINGS ── */
+  .findings-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+    margin-bottom: 64px;
+  }
+  .finding-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 22px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .finding-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .finding-card::after {
+    content: attr(data-num);
+    position: absolute; right: 18px; top: 14px;
+    font-family: 'Playfair Display', serif;
+    font-size: 52px; font-weight: 900;
+    color: rgba(245,166,35,0.06);
+    line-height: 1;
+  }
+  .finding-icon { font-size: 22px; margin-bottom: 10px; }
+  .finding-insight { font-size: 15px; font-weight: 700; color: var(--accent2); margin-bottom: 8px; line-height: 1.4; }
+  .finding-detail { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+  /* ── ANALYSIS STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 0; margin-bottom: 64px; }
+  .step {
+    display: flex; gap: 24px; align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    background: rgba(245,166,35,0.1);
+    border-radius: 4px;
+    padding: 4px 10px;
+    white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+  }
+  .step-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .step-tech {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--py);
+    margin-top: 6px;
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-header {
+    background: var(--surface);
+    border: 1px solid var(--border); border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    padding: 12px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .code-dots { display: flex; gap: 6px; }
+  .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .code-filename { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0 0 10px 10px;
+    padding: 28px; overflow-x: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px; line-height: 1.8;
+    margin-bottom: 64px;
+  }
+  .kw  { color: #56ccf2; font-weight: 500; }
+  .fn  { color: #bb86fc; }
+  .cm  { color: #5a5248; font-style: italic; }
+  .str { color: #a8d8a8; }
+  .num { color: #f5a623; }
+  .cls { color: #f7c560; }
+
+  /* ── TECH PILLS ── */
+  .tech-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 64px; }
+  .tech-pill {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 16px;
+    font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .tech-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 28px 52px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-left { font-size: 13px; color: var(--muted); }
+  .footer-left strong { color: var(--text); }
+  .footer-links { display: flex; gap: 20px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+
+  @media(max-width:768px){
+    nav, .section, footer { padding-left: 20px; padding-right: 20px; }
+    .hero { grid-template-columns: 1fr; padding: 48px 20px 40px; gap: 32px; }
+    .findings-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><span>TM</span> · Portfolio</div>
+  <div class="nav-links">
+    <a href="https://lasemajek12-max.github.io/data-analytics-portfolio/">← All Projects</a>
+    <a href="https://www.linkedin.com/in/tolu-majek124/">LinkedIn</a>
+    <a href="https://github.com/lasemajek12-max/data-analytics-portfolio">GitHub</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-left">
+    <div class="project-tag">Project 04 · Python · EDA</div>
+    <h1>Forex Trading<br><span class="italic">Performance</span><br>Analysis</h1>
+    <p class="subtitle">End-to-end exploratory data analysis of 1,200 forex trades across 8 sales reps, 4 regions, and 5 products — uncovering revenue patterns, rep performance gaps, and regional growth signals.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="https://github.com/lasemajek12-max/data-analytics-portfolio/blob/main/project-4-python-eda-forex/forex_trading_eda.ipynb">View Notebook →</a>
+      <a class="btn-ghost" href="https://lasemajek12-max.github.io/data-analytics-portfolio/">← Portfolio</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-row"><span class="stat-key">Trades analysed</span><span class="stat-val">1,200</span></div>
+    <div class="stat-row"><span class="stat-key">Sales reps</span><span class="stat-val">8</span></div>
+    <div class="stat-row"><span class="stat-key">Regions</span><span class="stat-val">4</span></div>
+    <div class="stat-row"><span class="stat-key">Products</span><span class="stat-val">5</span></div>
+    <div class="stat-row"><span class="stat-key">Time period</span><span class="stat-val">2 yrs</span></div>
+    <div class="stat-row"><span class="stat-key">Analysis sections</span><span class="stat-val">9</span></div>
+  </div>
+</div>
+
+<hr>
+
+<div class="section">
+  <div class="section-label">// key findings</div>
+  <h2>What the Data Revealed</h2>
+  <div class="findings-grid">
+
+    <div class="finding-card" data-num="01">
+      <div class="finding-icon">📅</div>
+      <div class="finding-insight">Revenue dips are seasonal, not random</div>
+      <div class="finding-detail">Two consistent months per year showed revenue dips regardless of rep activity or product mix — pointing to market seasonality rather than internal performance issues.</div>
+    </div>
+
+    <div class="finding-card" data-num="02">
+      <div class="finding-icon">🏆</div>
+      <div class="finding-insight">Top rep outperforms bottom by 2.3× — but deal size is almost identical</div>
+      <div class="finding-detail">The performance gap between the highest and lowest rep came entirely from trade volume, not deal quality. The bottom reps needed more pipeline, not bigger deals.</div>
+    </div>
+
+    <div class="finding-card" data-num="03">
+      <div class="finding-icon">📉</div>
+      <div class="finding-insight">Larger deals actually compress margins (r = −0.12)</div>
+      <div class="finding-detail">Correlation analysis showed a weak but consistent negative relationship between deal size and profit margin — meaning the strategy of chasing large tickets was slightly counterproductive.</div>
+    </div>
+
+    <div class="finding-card" data-num="04">
+      <div class="finding-icon">🌍</div>
+      <div class="finding-insight">MENA: smallest region, fastest growth</div>
+      <div class="finding-detail">Despite being the lowest-revenue region, MENA showed the steepest month-on-month growth trajectory — signalling where to prioritise expansion investment.</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">// notebook structure</div>
+  <h2>9-Section Analysis Flow</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">§ 01</div>
+      <div><div class="step-name">Data Generation</div><div class="step-desc">Simulating realistic 1,200-row trading dataset with controlled distributions, rep targets, and seasonal noise.</div><div class="step-tech">NumPy · random · clip · linspace</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">§ 02</div>
+      <div><div class="step-name">Data Cleaning</div><div class="step-desc">Null checks, duplicate detection, IQR outlier analysis, type validation across all columns.</div><div class="step-tech">Pandas · describe · isnull · duplicated</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">§ 03</div>
+      <div><div class="step-name">KPI Dashboard</div><div class="step-desc">Revenue, profit, margin %, deal count, and completion rate — all in a single summary panel.</div><div class="step-tech">groupby · agg · sum · mean · count</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">§ 04</div>
+      <div><div class="step-name">Monthly Revenue Trend</div><div class="step-desc">Month-on-month revenue vs profit trend, growth rate %, margin % over time with fill_between shading.</div><div class="step-tech">to_period · pct_change · fill_between</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">§ 05</div>
+      <div><div class="step-name">Rep Performance Analysis</div><div class="step-desc">Revenue, avg deal size, and target attainment ranked by rep — highlights who needs coaching vs recognition.</div><div class="step-tech">barh · conditional colouring · target lines</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">§ 06</div>
+      <div><div class="step-name">Product & Segment Breakdown</div><div class="step-desc">Donut chart + grouped bar showing revenue and margin by product type and client segment.</div><div class="step-tech">pie · bar · Seaborn palettes</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">§ 07</div>
+      <div><div class="step-name">Correlation Analysis</div><div class="step-desc">Scatter plot of deal size vs margin with trend line. Box plots showing margin distribution by product.</div><div class="step-tech">polyfit · scatter · boxplot · r-value</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">§ 08</div>
+      <div><div class="step-name">Regional Analysis</div><div class="step-desc">Monthly revenue trend lines per region + total revenue comparison — surfacing MENA growth signal.</div><div class="step-tech">groupby region · multi-line plot</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">§ 09</div>
+      <div><div class="step-name">Key Findings & Recommendations</div><div class="step-desc">Written summary of the 4 headline insights with specific, actionable business recommendations.</div><div class="step-tech">Markdown · narrative formatting</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">// code preview</div>
+  <h2>Sample — Rep Performance Ranking</h2>
+  <div class="code-header">
+    <div class="code-dots">
+      <div class="code-dot" style="background:#ff5f56"></div>
+      <div class="code-dot" style="background:#ffbd2e"></div>
+      <div class="code-dot" style="background:#27c93f"></div>
+    </div>
+    <div class="code-filename">📓 forex_trading_eda.ipynb · Section 05</div>
+  </div>
+<pre><span class="cm"># Sales rep performance — revenue, deal size, and target attainment</span>
+
+rep_performance = df.<span class="fn">groupby</span>(<span class="str">'sales_rep'</span>).<span class="fn">agg</span>(
+    total_revenue   = (<span class="str">'net_revenue'</span>,  <span class="str">'sum'</span>),
+    avg_deal_size   = (<span class="str">'net_revenue'</span>,  <span class="str">'mean'</span>),
+    total_trades    = (<span class="str">'trade_id'</span>,     <span class="str">'count'</span>),
+    target_revenue  = (<span class="str">'monthly_target'</span>,<span class="str">'sum'</span>)
+).<span class="fn">reset_index</span>()
+
+rep_performance[<span class="str">'attainment_pct'</span>] = (
+    rep_performance[<span class="str">'total_revenue'</span>] /
+    rep_performance[<span class="str">'target_revenue'</span>] * <span class="num">100</span>
+).<span class="fn">round</span>(<span class="num">1</span>)
+
+rep_performance = rep_performance.<span class="fn">sort_values</span>(<span class="str">'total_revenue'</span>, ascending=<span class="kw">True</span>)
+
+<span class="cm"># Colour bars by attainment: green = above target, amber = near, red = below</span>
+colours = [
+    <span class="str">'#6fcf97'</span> <span class="kw">if</span> x >= <span class="num">100</span> <span class="kw">else</span>
+    <span class="str">'#f5a623'</span> <span class="kw">if</span> x >= <span class="num">85</span>  <span class="kw">else</span>
+    <span class="str">'#eb5757'</span>
+    <span class="kw">for</span> x <span class="kw">in</span> rep_performance[<span class="str">'attainment_pct'</span>]
+]
+
+ax.<span class="fn">barh</span>(rep_performance[<span class="str">'sales_rep'</span>],
+       rep_performance[<span class="str">'total_revenue'</span>],
+       color=colours, edgecolor=<span class="str">'none'</span>, height=<span class="num">0.65</span>)</pre>
+</div>
+
+<div class="section">
+  <div class="section-label">// stack</div>
+  <h2>Tools & Libraries</h2>
+  <div class="tech-row">
+    <div class="tech-pill"><div class="dot"></div>Python 3.10</div>
+    <div class="tech-pill"><div class="dot"></div>Pandas</div>
+    <div class="tech-pill"><div class="dot"></div>NumPy</div>
+    <div class="tech-pill"><div class="dot"></div>Matplotlib</div>
+    <div class="tech-pill"><div class="dot"></div>Seaborn</div>
+    <div class="tech-pill"><div class="dot"></div>Jupyter Notebook</div>
+    <div class="tech-pill"><div class="dot"></div>IQR Outlier Detection</div>
+    <div class="tech-pill"><div class="dot"></div>pct_change (MoM growth)</div>
+    <div class="tech-pill"><div class="dot"></div>polyfit (trend lines)</div>
+    <div class="tech-pill"><div class="dot"></div>Conditional colouring</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-left">Built by <strong>Toluwalase Majekodunmi</strong> · Data Analyst · Amsterdam</div>
+  <div class="footer-links">
+    <a href="https://lasemajek12-max.github.io/data-analytics-portfolio/">Portfolio</a>
+    <a href="https://www.linkedin.com/in/tolu-majek124/">LinkedIn</a>
+    <a href="https://github.com/lasemajek12-max/data-analytics-portfolio/blob/main/project-4-python-eda-forex/forex_trading_eda.ipynb">View Notebook</a>
+  </div>
+</footer>
+</body>
+</html>
