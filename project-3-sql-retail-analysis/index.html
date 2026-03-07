@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Retail Analysis — Toluwalase Majekodunmi</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0d0f14;
+    --surface: #13161e;
+    --card:    #1a1e28;
+    --border:  #252a38;
+    --accent:  #4fc3f7;
+    --accent2: #81d4fa;
+    --green:   #69f0ae;
+    --amber:   #ffd54f;
+    --text:    #e8eaf0;
+    --muted:   #8892a4;
+    --sql:     #ce93d8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,195,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,195,247,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GLOW ── */
+  .glow {
+    position: fixed;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(79,195,247,0.08) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: relative; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 15px; font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+  .nav-logo span { color: var(--accent); font-weight: 700; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none;
+    font-size: 13px; font-weight: 400;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; z-index: 1;
+    padding: 80px 48px 60px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .project-type {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(79,195,247,0.08);
+    border: 1px solid rgba(79,195,247,0.2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 10px;
+  }
+  h1 em { font-style: italic; color: var(--accent); font-weight: 300; }
+
+  .subtitle {
+    font-size: 17px; color: var(--muted); font-weight: 300;
+    max-width: 560px; line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    margin-bottom: 40px;
+  }
+  .meta-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: var(--muted);
+  }
+  .meta-pill span { color: var(--accent); }
+
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-size: 13px; font-weight: 500;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-size: 13px; font-weight: 400;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    max-width: 1100px; margin: 0 auto 60px;
+  }
+
+  /* ── SECTION ── */
+  .section { max-width: 1100px; margin: 0 auto; padding: 0 48px 72px; position: relative; z-index: 1; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .section h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 32px; font-weight: 700;
+    margin-bottom: 32px;
+  }
+
+  /* ── STATS ROW ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 60px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 20px;
+    text-align: center;
+    position: relative; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent); }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 40px; font-weight: 900;
+    color: var(--accent); line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label { font-size: 12px; color: var(--muted); }
+
+  /* ── QUERIES GRID ── */
+  .queries-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 60px;
+  }
+  .query-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    display: flex; gap: 16px;
+    align-items: flex-start;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: default;
+  }
+  .query-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .query-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    background: rgba(79,195,247,0.1);
+    border-radius: 4px;
+    padding: 3px 8px;
+    white-space: nowrap; flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .query-body {}
+  .query-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .query-tech {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--sql);
+    margin-bottom: 6px;
+  }
+  .query-q { font-size: 12px; color: var(--muted); line-height: 1.6; font-style: italic; }
+
+  /* ── CODE BLOCK ── */
+  .code-section { margin-bottom: 60px; }
+  .code-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    padding: 12px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .code-filename {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .code-dots { display: flex; gap: 6px; }
+  .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0 0 10px 10px;
+    padding: 28px;
+    overflow-x: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .kw  { color: #81d4fa; font-weight: 500; }
+  .fn  { color: #ce93d8; }
+  .cm  { color: #546e7a; font-style: italic; }
+  .str { color: #a5d6a7; }
+  .num { color: #ffd54f; }
+
+  /* ── TECHNIQUES ── */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .tech-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .tech-icon { font-size: 20px; margin-bottom: 8px; }
+  .tech-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; color: var(--accent); }
+  .tech-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 28px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 100%;
+  }
+  .footer-left { font-size: 13px; color: var(--muted); }
+  .footer-left strong { color: var(--text); }
+  .footer-links { display: flex; gap: 20px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+
+  @media(max-width:768px){
+    nav, .hero, .section, footer { padding-left: 20px; padding-right: 20px; }
+    .stats { grid-template-columns: repeat(2,1fr); }
+    .queries-grid { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: 1fr 1fr; }
+    h1 { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<nav>
+  <div class="nav-logo"><span>TM</span> · Portfolio</div>
+  <div class="nav-links">
+    <a href="https://lasemajek12-max.github.io/data-analytics-portfolio/">← All Projects</a>
+    <a href="https://www.linkedin.com/in/tolu-majek124/">LinkedIn</a>
+    <a href="https://github.com/lasemajek12-max/data-analytics-portfolio">GitHub</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="project-type"><div class="dot"></div>Project 03 · SQL</div>
+  <h1>Retail Sales &<br><em>Customer Analysis</em></h1>
+  <p class="subtitle">10 advanced SQL queries answering real business questions across a 5-table supermarket retail database — from cohort retention to RFM segmentation.</p>
+  <div class="hero-meta">
+    <div class="meta-pill">Tool: <span>PostgreSQL / BigQuery</span></div>
+    <div class="meta-pill">Tables: <span>5 joined</span></div>
+    <div class="meta-pill">Queries: <span>10 business insights</span></div>
+    <div class="meta-pill">Context: <span>Jumbo Supermarkten</span></div>
+  </div>
+  <div class="hero-btns">
+    <a class="btn-primary" href="https://github.com/lasemajek12-max/data-analytics-portfolio/blob/main/project-3-sql-retail-analysis/retail_sales_analysis.sql">
+      View SQL File →
+    </a>
+    <a class="btn-ghost" href="https://lasemajek12-max.github.io/data-analytics-portfolio/">← Back to Portfolio</a>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="section">
+  <div class="stats">
+    <div class="stat-card"><div class="stat-num">10</div><div class="stat-label">Business queries</div></div>
+    <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">Joined tables</div></div>
+    <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">SQL techniques</div></div>
+    <div class="stat-card"><div class="stat-num">∞</div><div class="stat-label">BigQuery compatible</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">// queries</div>
+  <h2>10 Business Questions, Answered</h2>
+  <div class="queries-grid">
+
+    <div class="query-card">
+      <div class="query-num">Q01</div>
+      <div class="query-body">
+        <div class="query-name">Monthly Revenue & Margin</div>
+        <div class="query-tech">DATE_TRUNC · aggregation · derived columns</div>
+        <div class="query-q">"How is revenue and margin trending month-on-month?"</div>
+      </div>
+    </div>
+
+    <div class="query-card">
+      <div class="query-num">Q02</div>
+      <div class="query-body">
+        <div class="query-name">Top 10 Products by Revenue</div>
+        <div class="query-tech">JOIN · GROUP BY · ORDER BY · LIMIT</div>
+        <div class="query-q">"Which products are driving the most revenue?"</div>
+      </div>
+    </div>
+
+    <div class="query-card">
+      <div class="query-num">Q03</div>
+      <div class="query-body">
+        <div class="query-name">Customer RFM Segmentation</div>
+        <div class="query-tech">CTE · CASE WHEN · multi-condition logic</div>
+        <div class="query-q">"How do we classify customers as Champions, Loyal, At Risk?"</div>
+      </div>
+    </div>
+
+    <div class="query-card">
+      <div class="query-num">Q04</div>
+      <div class="query-body">
+        <div class="query-name">Store Revenue + Running Total</div>
+        <div class="query-tech">SUM OVER() · window function · ROWS BETWEEN</div>
+        <div class="query-q">"Which stores and regions contribute most to total revenue?"</div>
+      </div>
+    </div>
+
+    <div class="query-card">
+      <div class="query-num">Q05</div>
+      <div class="query-body">
+        <div class="query-name">Month-over-Month Growth Rate</div>
+        <div class="query-tech">CTE · LAG() window function</div>
+        <div class="query-q">"Is the business growing or declining each month?"</div>
+      </div>
+    </div>
+
+    <div class="query-card">
+      <div class="query-num">Q06</div>
+      <div class="query-body">
+        <div class="query-name">Category Profitability Rank</div>
+        <div class="query-tech">RANK() · GROUP BY · margin calculation</div>
+        <div class="query-q">"Which product categories rank highest by gross profit?"</div>
+      </div>
+    </div>
+
+    <div class="query-card">
+      <div class="query-num">Q07</div>
+      <div class="query-body">
+        <div class="query-name">Churn Risk — Lapsed Buyers</div>
+        <div class="query-tech">CTE · date arithmetic · INTERVAL · subquery</div>
+        <div class="query-q">"Which Gold/Platinum customers haven't bought in 60+ days?"</div>
+      </div>
+    </div>
+
+    <div class="query-card">
+      <div class="query-num">Q08</div>
+      <div class="query-body">
+        <div class="query-name">Discount Impact Analysis</div>
+        <div class="query-tech">CASE WHEN bucketing · band comparison</div>
+        <div class="query-q">"Do heavy discounts actually drive more volume?"</div>
+      </div>
+    </div>
+
+    <div class="query-card">
+      <div class="query-num">Q09</div>
+      <div class="query-body">
+        <div class="query-name">Revenue per Square Metre</div>
+        <div class="query-tech">Derived metric · JOIN · NULLIF safety</div>
+        <div class="query-q">"Which stores generate the most revenue per sqm of floor space?"</div>
+      </div>
+    </div>
+
+    <div class="query-card">
+      <div class="query-num">Q10</div>
+      <div class="query-body">
+        <div class="query-name">Cohort Retention Analysis</div>
+        <div class="query-tech">Multi-CTE · self-join · AGE() · EXTRACT</div>
+        <div class="query-q">"Do customers acquired in month X return to buy in month X+1?"</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">// code preview</div>
+  <h2>Sample Query — RFM Segmentation</h2>
+  <div class="code-section">
+    <div class="code-header">
+      <div class="code-dots">
+        <div class="code-dot" style="background:#ff5f56"></div>
+        <div class="code-dot" style="background:#ffbd2e"></div>
+        <div class="code-dot" style="background:#27c93f"></div>
+      </div>
+      <div class="code-filename">📄 retail_sales_analysis.sql · Query 03</div>
+    </div>
+<pre><span class="cm">-- Customer RFM Segmentation (Recency · Frequency · Monetary)</span>
+<span class="cm">-- Classifies every customer into actionable retention segments</span>
+
+<span class="kw">WITH</span> customer_spend <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    c.customer_id,
+    c.name,
+    c.loyalty_tier,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> t.txn_id)             <span class="kw">AS</span> total_transactions,
+    <span class="fn">ROUND</span>(<span class="fn">SUM</span>(ti.quantity * ti.unit_price
+          * (<span class="num">1</span> - ti.discount_pct / <span class="num">100</span>)), <span class="num">2</span>)  <span class="kw">AS</span> lifetime_value,
+    <span class="fn">MAX</span>(t.txn_date)                         <span class="kw">AS</span> last_purchase_date
+  <span class="kw">FROM</span> customers c
+  <span class="kw">JOIN</span> transactions t       <span class="kw">ON</span> c.customer_id = t.customer_id
+  <span class="kw">JOIN</span> transaction_items ti <span class="kw">ON</span> t.txn_id      = ti.txn_id
+  <span class="kw">GROUP BY</span> c.customer_id, c.name, c.loyalty_tier
+)
+<span class="kw">SELECT</span>
+  customer_id, name, lifetime_value,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> lifetime_value &gt;= <span class="num">5000</span> <span class="kw">AND</span> total_transactions &gt;= <span class="num">20</span> <span class="kw">THEN</span> <span class="str">'Champion'</span>
+    <span class="kw">WHEN</span> lifetime_value &gt;= <span class="num">2500</span> <span class="kw">AND</span> total_transactions &gt;= <span class="num">10</span> <span class="kw">THEN</span> <span class="str">'Loyal'</span>
+    <span class="kw">WHEN</span> lifetime_value &gt;= <span class="num">1000</span>                              <span class="kw">THEN</span> <span class="str">'Promising'</span>
+    <span class="kw">WHEN</span> last_purchase_date &lt; <span class="fn">CURRENT_DATE</span> - <span class="kw">INTERVAL</span> <span class="str">'90 days'</span> <span class="kw">THEN</span> <span class="str">'At Risk'</span>
+    <span class="kw">ELSE</span> <span class="str">'New / Occasional'</span>
+  <span class="kw">END</span> <span class="kw">AS</span> customer_segment
+<span class="kw">FROM</span> customer_spend
+<span class="kw">ORDER BY</span> lifetime_value <span class="kw">DESC</span>;</pre>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">// techniques</div>
+  <h2>SQL Skills Demonstrated</h2>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tech-icon">🔗</div><div class="tech-name">Multi-table JOINs</div><div class="tech-desc">INNER JOIN across 4 related tables in a normalised schema</div></div>
+    <div class="tech-card"><div class="tech-icon">🧩</div><div class="tech-name">CTEs</div><div class="tech-desc">Named Common Table Expressions for readable, modular query logic</div></div>
+    <div class="tech-card"><div class="tech-icon">🪟</div><div class="tech-name">Window Functions</div><div class="tech-desc">LAG(), RANK(), SUM() OVER(), ROWS BETWEEN UNBOUNDED</div></div>
+    <div class="tech-card"><div class="tech-icon">📅</div><div class="tech-name">Date Arithmetic</div><div class="tech-desc">DATE_TRUNC, EXTRACT, AGE, INTERVAL for time-series analysis</div></div>
+    <div class="tech-card"><div class="tech-icon">🔀</div><div class="tech-name">Conditional Logic</div><div class="tech-desc">CASE WHEN for customer segmentation and discount bucketing</div></div>
+    <div class="tech-card"><div class="tech-icon">🛡️</div><div class="tech-name">Null Safety</div><div class="tech-desc">NULLIF() to prevent division-by-zero in all margin calculations</div></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-left">Built by <strong>Toluwalase Majekodunmi</strong> · Data Analyst · Amsterdam</div>
+  <div class="footer-links">
+    <a href="https://lasemajek12-max.github.io/data-analytics-portfolio/">Portfolio</a>
+    <a href="https://www.linkedin.com/in/tolu-majek124/">LinkedIn</a>
+    <a href="https://github.com/lasemajek12-max/data-analytics-portfolio/blob/main/project-3-sql-retail-analysis/retail_sales_analysis.sql">View Raw SQL</a>
+  </div>
+</footer>
+
+</body>
+</html>
